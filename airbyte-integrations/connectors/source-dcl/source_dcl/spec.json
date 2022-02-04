@@ -1,0 +1,38 @@
+{
+  "documentationUrl": "https://docsurl.com",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "DCL Source Spec",
+    "type": "object",
+    "required": ["username", "password"],
+    "additionalProperties": false,
+    "properties": {
+      "username": {
+        "type": "string",
+        "title": "Basic Authentication Username",
+        "description": "The DCL Basic Authentication username",
+        "airbyte_secret": true
+      },
+      "password": {
+        "type": "string",
+        "title": "Basic Authentication Password",
+        "description": "The DCL Basic Authentication password",
+        "airbyte_secret": true
+      },
+      "modified_from": {
+        "type": "string",
+        "title": "Modified from",
+        "description": "ISO8601 timestamp from which the replication from DCL API will start from.",
+        "examples": ["2021-12-01T00:00:00"],
+        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}$"
+      },
+      "modified_to": {
+        "type": "string",
+        "title": "Modified to",
+        "description": "ISO8601 timestamp from which the replication from DCL will be up to.",
+        "examples": ["2021-12-01T00:00:00"],
+        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}$"
+      }
+    }
+  }
+}
