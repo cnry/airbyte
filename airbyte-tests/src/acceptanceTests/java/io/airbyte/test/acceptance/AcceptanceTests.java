@@ -188,7 +188,6 @@ public class AcceptanceTests {
   @SuppressWarnings("UnstableApiUsage")
   @BeforeAll
   public static void init() throws URISyntaxException, IOException, InterruptedException {
-    System.out.println("in init");
     if (IS_GKE && !IS_KUBE) {
       throw new RuntimeException("KUBE Flag should also be enabled if GKE flag is enabled");
     }
@@ -289,20 +288,22 @@ public class AcceptanceTests {
       destinationPsql.stop();
     }
 
-    for (final UUID sourceId : sourceIds) {
-      deleteSource(sourceId);
+    for (final UUID operationId : operationIds) {
+      deleteOperation(operationId);
     }
 
     for (final UUID connectionId : connectionIds) {
       disableConnection(connectionId);
     }
 
+    for (final UUID sourceId : sourceIds) {
+      deleteSource(sourceId);
+    }
+
     for (final UUID destinationId : destinationIds) {
       deleteDestination(destinationId);
     }
-    for (final UUID operationId : operationIds) {
-      deleteOperation(operationId);
-    }
+
   }
 
   @Test

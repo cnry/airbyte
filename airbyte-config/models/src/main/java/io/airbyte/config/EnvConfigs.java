@@ -17,7 +17,6 @@ import io.airbyte.config.storage.CloudStorageConfigs.GcsConfig;
 import io.airbyte.config.storage.CloudStorageConfigs.MinioConfig;
 import io.airbyte.config.storage.CloudStorageConfigs.S3Config;
 import java.nio.file.Path;
-import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -121,6 +120,9 @@ public class EnvConfigs implements Configs {
   private static final String SHOULD_RUN_SYNC_WORKFLOWS = "SHOULD_RUN_SYNC_WORKFLOWS";
   private static final String SHOULD_RUN_CONNECTION_MANAGER_WORKFLOWS = "SHOULD_RUN_CONNECTION_MANAGER_WORKFLOWS";
 
+  private static final String MAX_FAILED_JOBS_IN_A_ROW_BEFORE_CONNECTION_DISABLE = "MAX_FAILED_JOBS_IN_A_ROW_BEFORE_CONNECTION_DISABLE";
+  private static final String MAX_DAYS_OF_ONLY_FAILED_JOBS_BEFORE_CONNECTION_DISABLE = "MAX_DAYS_OF_ONLY_FAILED_JOBS_BEFORE_CONNECTION_DISABLE";
+
   // job-type-specific overrides
   public static final String SPEC_JOB_KUBE_NODE_SELECTORS = "SPEC_JOB_KUBE_NODE_SELECTORS";
   public static final String CHECK_JOB_KUBE_NODE_SELECTORS = "CHECK_JOB_KUBE_NODE_SELECTORS";
@@ -130,12 +132,6 @@ public class EnvConfigs implements Configs {
   private static final String REPLICATION_ORCHESTRATOR_CPU_LIMIT = "REPLICATION_ORCHESTRATOR_CPU_LIMIT";
   private static final String REPLICATION_ORCHESTRATOR_MEMORY_REQUEST = "REPLICATION_ORCHESTRATOR_MEMORY_REQUEST";
   private static final String REPLICATION_ORCHESTRATOR_MEMORY_LIMIT = "REPLICATION_ORCHESTRATOR_MEMORY_LIMIT";
-
-  private static final String DEFAULT_WORKER_STATUS_CHECK_INTERVAL = "DEFAULT_WORKER_STATUS_CHECK_INTERVAL";
-  private static final String SPEC_WORKER_STATUS_CHECK_INTERVAL = "SPEC_WORKER_STATUS_CHECK_INTERVAL";
-  private static final String CHECK_WORKER_STATUS_CHECK_INTERVAL = "CHECK_WORKER_STATUS_CHECK_INTERVAL";
-  private static final String DISCOVER_WORKER_STATUS_CHECK_INTERVAL = "DISCOVER_WORKER_STATUS_CHECK_INTERVAL";
-  private static final String REPLICATION_WORKER_STATUS_CHECK_INTERVAL = "REPLICATION_WORKER_STATUS_CHECK_INTERVAL";
 
   static final String CHECK_JOB_MAIN_CONTAINER_CPU_REQUEST = "CHECK_JOB_MAIN_CONTAINER_CPU_REQUEST";
   static final String CHECK_JOB_MAIN_CONTAINER_CPU_LIMIT = "CHECK_JOB_MAIN_CONTAINER_CPU_LIMIT";
@@ -158,12 +154,6 @@ public class EnvConfigs implements Configs {
   private static final long DEFAULT_MAXIMUM_WORKSPACE_SIZE_MB = 5000;
   private static final int DEFAULT_DATABASE_INITIALIZATION_TIMEOUT_MS = 60 * 1000;
 
-  private static final Duration DEFAULT_DEFAULT_WORKER_STATUS_CHECK_INTERVAL = Duration.ofSeconds(30);
-  private static final Duration DEFAULT_SPEC_WORKER_STATUS_CHECK_INTERVAL = Duration.ofSeconds(1);
-  private static final Duration DEFAULT_CHECK_WORKER_STATUS_CHECK_INTERVAL = Duration.ofSeconds(1);
-  private static final Duration DEFAULT_DISCOVER_WORKER_STATUS_CHECK_INTERVAL = Duration.ofSeconds(1);
-  private static final Duration DEFAULT_REPLICATION_WORKER_STATUS_CHECK_INTERVAL = Duration.ofSeconds(30);
-
   public static final long DEFAULT_MAX_SPEC_WORKERS = 5;
   public static final long DEFAULT_MAX_CHECK_WORKERS = 5;
   public static final long DEFAULT_MAX_DISCOVER_WORKERS = 5;
@@ -177,6 +167,9 @@ public class EnvConfigs implements Configs {
       WORKER_ENVIRONMENT, (instance) -> instance.getWorkerEnvironment().name());
 
   public static final int DEFAULT_TEMPORAL_HISTORY_RETENTION_IN_DAYS = 30;
+
+  public static final int DEFAULT_FAILED_JOBS_IN_A_ROW_BEFORE_CONNECTION_DISABLE = 100;
+  public static final int DEFAULT_DAYS_OF_ONLY_FAILED_JOBS_BEFORE_CONNECTION_DISABLE = 14;
 
   private final Function<String, String> getEnv;
   private final Supplier<Set<String>> getAllEnvKeys;
@@ -581,46 +574,6 @@ public class EnvConfigs implements Configs {
   }
 
   @Override
-  public Duration getDefaultWorkerStatusCheckInterval() {
-    return getEnvOrDefault(
-        DEFAULT_WORKER_STATUS_CHECK_INTERVAL,
-        DEFAULT_DEFAULT_WORKER_STATUS_CHECK_INTERVAL,
-        value -> Duration.ofSeconds(Integer.parseInt(value)));
-  }
-
-  @Override
-  public Duration getSpecWorkerStatusCheckInterval() {
-    return getEnvOrDefault(
-        SPEC_WORKER_STATUS_CHECK_INTERVAL,
-        DEFAULT_SPEC_WORKER_STATUS_CHECK_INTERVAL,
-        value -> Duration.ofSeconds(Integer.parseInt(value)));
-  }
-
-  @Override
-  public Duration getCheckWorkerStatusCheckInterval() {
-    return getEnvOrDefault(
-        CHECK_WORKER_STATUS_CHECK_INTERVAL,
-        DEFAULT_CHECK_WORKER_STATUS_CHECK_INTERVAL,
-        value -> Duration.ofSeconds(Integer.parseInt(value)));
-  }
-
-  @Override
-  public Duration getDiscoverWorkerStatusCheckInterval() {
-    return getEnvOrDefault(
-        DISCOVER_WORKER_STATUS_CHECK_INTERVAL,
-        DEFAULT_DISCOVER_WORKER_STATUS_CHECK_INTERVAL,
-        value -> Duration.ofSeconds(Integer.parseInt(value)));
-  }
-
-  @Override
-  public Duration getReplicationWorkerStatusCheckInterval() {
-    return getEnvOrDefault(
-        REPLICATION_WORKER_STATUS_CHECK_INTERVAL,
-        DEFAULT_REPLICATION_WORKER_STATUS_CHECK_INTERVAL,
-        value -> Duration.ofSeconds(Integer.parseInt(value)));
-  }
-
-  @Override
   public String getJobMainContainerCpuRequest() {
     return getEnvOrDefault(JOB_MAIN_CONTAINER_CPU_REQUEST, DEFAULT_JOB_CPU_REQUIREMENT);
   }
@@ -659,6 +612,16 @@ public class EnvConfigs implements Configs {
         Entry::getKey,
         entry -> Exceptions.swallowWithDefault(() -> Objects.requireNonNullElse(entry.getValue().apply(this), ""), "")));
     return MoreMaps.merge(jobPrefixedEnvMap, jobSharedEnvMap);
+  }
+
+  @Override
+  public int getMaxFailedJobsInARowBeforeConnectionDisable() {
+    return getEnvOrDefault(MAX_FAILED_JOBS_IN_A_ROW_BEFORE_CONNECTION_DISABLE, DEFAULT_FAILED_JOBS_IN_A_ROW_BEFORE_CONNECTION_DISABLE);
+  }
+
+  @Override
+  public int getMaxDaysOfOnlyFailedJobsBeforeConnectionDisable() {
+    return getEnvOrDefault(MAX_DAYS_OF_ONLY_FAILED_JOBS_BEFORE_CONNECTION_DISABLE, DEFAULT_DAYS_OF_ONLY_FAILED_JOBS_BEFORE_CONNECTION_DISABLE);
   }
 
   @Override

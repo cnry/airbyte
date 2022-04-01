@@ -8,7 +8,6 @@ import io.airbyte.commons.version.AirbyteVersion;
 import io.airbyte.config.helpers.LogConfigs;
 import io.airbyte.config.storage.CloudStorageConfigs;
 import java.nio.file.Path;
-import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -249,6 +248,18 @@ public interface Configs {
    */
   Map<String, String> getJobDefaultEnvMap();
 
+  /**
+   * Defines the number of consecutive job failures required before a connection is auto-disabled if
+   * the AUTO_DISABLE_FAILING_CONNECTIONS flag is set to true.
+   */
+  int getMaxFailedJobsInARowBeforeConnectionDisable();
+
+  /**
+   * Defines the required number of days with only failed jobs before a connection is auto-disabled if
+   * the AUTO_DISABLE_FAILING_CONNECTIONS flag is set to true.
+   */
+  int getMaxDaysOfOnlyFailedJobsBeforeConnectionDisable();
+
   // Jobs - Kube only
   /**
    * Define the check job container's minimum CPU request. Defaults to
@@ -329,41 +340,6 @@ public interface Configs {
    * Define the Kubernetes namespace Job pods are created in.
    */
   String getJobKubeNamespace();
-
-  /**
-   * Define the interval for checking for a Kubernetes pod status for a worker of an unspecified type.
-   *
-   * In seconds if specified by environment variable. Airbyte internal use only.
-   */
-  Duration getDefaultWorkerStatusCheckInterval();
-
-  /**
-   * Define the interval for checking for "get spec" Kubernetes pod statuses.
-   *
-   * In seconds if specified by environment variable. Airbyte internal use only.
-   */
-  Duration getSpecWorkerStatusCheckInterval();
-
-  /**
-   * Define the interval for checking for "check connection" Kubernetes pod statuses.
-   *
-   * In seconds if specified by environment variable. Airbyte internal use only.
-   */
-  Duration getCheckWorkerStatusCheckInterval();
-
-  /**
-   * Define the interval for checking for "discover" Kubernetes pod statuses.
-   *
-   * In seconds if specified by environment variable. Airbyte internal use only.
-   */
-  Duration getDiscoverWorkerStatusCheckInterval();
-
-  /**
-   * Define the interval for checking for "replication" Kubernetes pod statuses.
-   *
-   * In seconds if specified by environment variable. Airbyte internal use only.
-   */
-  Duration getReplicationWorkerStatusCheckInterval();
 
   // Logging/Monitoring/Tracking
   /**
