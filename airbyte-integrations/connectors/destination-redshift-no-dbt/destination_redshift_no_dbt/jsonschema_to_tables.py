@@ -30,6 +30,7 @@ class JsonToTables:
 
         for property_key, property_value in properties.items():
             item_type = property_value.get("type")
+            item_type = [item_type] if not isinstance(item_type, list) else item_type
             if not set(item_type).intersection({"object", "array"}):
                 data_type = DataTypeConverter.convert(property_value["type"], property_value.get("format"), property_value.get("maxLength"))
                 table.fields.append(Field(name=property_key, data_type=data_type))
