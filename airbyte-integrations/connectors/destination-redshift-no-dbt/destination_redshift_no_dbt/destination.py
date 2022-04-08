@@ -16,7 +16,7 @@ from airbyte_cdk.models import AirbyteConnectionStatus, ConfiguredAirbyteCatalog
     DestinationSyncMode
 from dotmap import DotMap
 from psycopg2._psycopg import connection as Connection
-from psycopg2.pool import ThreadedConnectionPool, SimpleConnectionPool
+from psycopg2.pool import SimpleConnectionPool
 
 from destination_redshift_no_dbt.csv_writer import CSVWriter
 from destination_redshift_no_dbt.jsonschema_to_tables import JsonToTables, PARENT_CHILD_SPLITTER
@@ -205,13 +205,13 @@ class DestinationRedshiftNoDbt(Destination):
                 create_schema_statement = f"CREATE SCHEMA IF NOT EXISTS {staging_schema}"
                 cursor.execute(create_schema_statement)
 
-                for key, table in stream.final_tables.items():
-                    staging_table = deepcopy(table)
-                    staging_table.schema = staging_schema
+            for key, table in stream.final_tables.items():
+                staging_table = deepcopy(table)
+                staging_table.schema = staging_schema
 
-                    stream.staging_tables[key] = staging_table
+                stream.staging_tables[key] = staging_table
 
-                    cursor.execute(staging_table.create_statement(staging=True))
+                cursor.execute(staging_table.create_statement(staging=True))
 
     def _create_pool(self, config: Mapping[str, Any]):
         self.connection_pool = SimpleConnectionPool(
