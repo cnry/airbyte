@@ -119,6 +119,8 @@ class DestinationRedshiftNoDbt(Destination):
                         if not isinstance(parents, list):
                             parents = [parents]
 
+                        parents = list(filter(None, parents))
+
                         children_records = []
                         for parent_item in parents:
                             children = parent_item.get(method)
@@ -128,7 +130,6 @@ class DestinationRedshiftNoDbt(Destination):
                             for child_item in children:
                                 if child_item and final_table.references and method == node[-1]:
                                     child_item[final_table.reference_key.name] = parent_item[AIRBYTE_ID_NAME]
-
 
                                 children_records.append(child_item)
 
