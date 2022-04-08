@@ -1,7 +1,7 @@
 from typing import Dict
 
 from airbyte_cdk.models import DestinationSyncMode
-from destination_redshift_py.table import Table
+from destination_redshift_no_dbt.table import Table
 from pydantic.main import BaseModel
 
 

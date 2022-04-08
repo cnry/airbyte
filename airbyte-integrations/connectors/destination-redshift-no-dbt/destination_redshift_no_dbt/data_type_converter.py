@@ -1,6 +1,6 @@
 from typing import List, Union
 
-from destination_redshift_py.field import DataType
+from destination_redshift_no_dbt.field import DataType
 
 VARCHAR = "VARCHAR"
 TIMESTAMP_WITHOUT_TIME_ZONE = "TIMESTAMP WITHOUT TIME ZONE"
