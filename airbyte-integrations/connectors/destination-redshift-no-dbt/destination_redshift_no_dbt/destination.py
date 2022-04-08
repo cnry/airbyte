@@ -18,16 +18,16 @@ from dotmap import DotMap
 from psycopg2._psycopg import connection as Connection
 from psycopg2.pool import ThreadedConnectionPool, SimpleConnectionPool
 
-from destination_redshift_py.csv_writer import CSVWriter
-from destination_redshift_py.jsonschema_to_tables import JsonToTables, PARENT_CHILD_SPLITTER
-from destination_redshift_py.s3_objects_manager import S3ObjectsManager
-from destination_redshift_py.stream import Stream
-from destination_redshift_py.table import AIRBYTE_EMITTED_AT, AIRBYTE_ID_NAME, Table
+from destination_redshift_no_dbt.csv_writer import CSVWriter
+from destination_redshift_no_dbt.jsonschema_to_tables import JsonToTables, PARENT_CHILD_SPLITTER
+from destination_redshift_no_dbt.s3_objects_manager import S3ObjectsManager
+from destination_redshift_no_dbt.stream import Stream
+from destination_redshift_no_dbt.table import AIRBYTE_EMITTED_AT, AIRBYTE_ID_NAME, Table
 
 logger = logging.getLogger("airbyte")
 
 
-class DestinationRedshiftPy(Destination):
+class DestinationRedshiftNoDbt(Destination):
     def __init__(self):
         self.streams: Dict[str, Stream] = dict()
 
@@ -157,7 +157,7 @@ class DestinationRedshiftPy(Destination):
     @staticmethod
     def _assign_id_and_emitted_at(records: List[DotMap], emitted_at: int, hashing_keys: List[str]):
         for record in records:
-            DestinationRedshiftPy._assign_id(record=record, hashing_keys=hashing_keys)
+            DestinationRedshiftNoDbt._assign_id(record=record, hashing_keys=hashing_keys)
             record[AIRBYTE_EMITTED_AT.name] = datetime.utcfromtimestamp(emitted_at / 1000).isoformat(timespec="seconds")
 
     @staticmethod

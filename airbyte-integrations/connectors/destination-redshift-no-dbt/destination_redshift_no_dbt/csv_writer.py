@@ -7,7 +7,7 @@ from typing import Union, List, Optional
 
 from dotmap import DotMap
 
-from destination_redshift_py.table import Table
+from destination_redshift_no_dbt.table import Table
 
 CSV_EXTENSION = "csv"
 GZIP_EXTENSION = "gzip"

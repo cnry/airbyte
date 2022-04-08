@@ -1,9 +1,9 @@
 from collections import OrderedDict
 from typing import Optional, List
 
-from destination_redshift_py.data_type_converter import DataTypeConverter, FALLBACK_DATATYPE
-from destination_redshift_py.field import Field
-from destination_redshift_py.table import Table
+from destination_redshift_no_dbt.data_type_converter import DataTypeConverter, FALLBACK_DATATYPE
+from destination_redshift_no_dbt.field import Field
+from destination_redshift_no_dbt.table import Table
 
 PARENT_CHILD_SPLITTER = "."
 

@@ -14,8 +14,8 @@ TEST_REQUIREMENTS = [
 ]
 
 setup(
-    name="destination_redshift_py",
-    description="Destination implementation for Redshift Py.",
+    name="destination_redshift_no_dbt",
+    description="Destination implementation for Redshift No Dbt.",
     author="Airbyte",
     author_email="contact@airbyte.io",
     packages=find_packages(),

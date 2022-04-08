@@ -4,5 +4,5 @@ plugins {
 }
 
 airbytePython {
-    moduleDirectory 'destination_redshift_py'
+    moduleDirectory 'destination_redshift_no_dbt'
 }

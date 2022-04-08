@@ -31,10 +31,10 @@ RUN apk --no-cache add bash \
 
 # copy payload code only
 COPY main.py ./
-COPY destination_redshift_py ./destination_redshift_py
+COPY destination_redshift_no_dbt ./destination_redshift_no_dbt
 
 ENV AIRBYTE_ENTRYPOINT "python /airbyte/integration_code/main.py"
 ENTRYPOINT ["python", "/airbyte/integration_code/main.py"]
 
 LABEL io.airbyte.version=0.1.0
-LABEL io.airbyte.name=airbyte/destination-redshift-py
+LABEL io.airbyte.name=airbyte/destination-redshift-no-dbt
