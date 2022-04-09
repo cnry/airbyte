@@ -200,10 +200,10 @@ class DestinationRedshiftNoDbt(Destination):
         cursor = self._get_connection(autocommit=True).cursor()
 
         for stream in self.streams.values():
-            if stream.destination_sync_mode == DestinationSyncMode.append_dedup:
-                random_table = list(stream.final_tables.values())[0]  # All final_tables will be stored in the same schema
+            random_table = list(stream.final_tables.values())[0]  # All final_tables will be stored in the same schema
+            staging_schema = f"_airbyte_{random_table.schema}"
 
-                staging_schema = f"_airbyte_{random_table.schema}"
+            if stream.destination_sync_mode == DestinationSyncMode.append_dedup:
                 create_schema_statement = f"CREATE SCHEMA IF NOT EXISTS {staging_schema}"
                 cursor.execute(create_schema_statement)
 
