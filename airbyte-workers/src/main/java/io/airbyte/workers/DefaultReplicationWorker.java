@@ -152,7 +152,7 @@ public class DefaultReplicationWorker implements ReplicationWorker {
                 } else {
                   replicationRunnableFailureRef.set(FailureHelper.replicationFailure(ex, Long.valueOf(jobId), attempt));
                 }
-              }
+              }docs/SUMMARY.md
             });
 
         LOGGER.info("Waiting for source and destination threads to complete.");
