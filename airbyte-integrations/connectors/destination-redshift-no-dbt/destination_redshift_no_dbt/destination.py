@@ -2,14 +2,12 @@
 # Copyright (c) 2021 Airbyte, Inc., all rights reserved.
 #
 import argparse
-import io
 import logging
 from copy import deepcopy
 from datetime import datetime
 from functools import reduce
 from hashlib import sha256
 from operator import iconcat
-from select import select
 from typing import Mapping, Any, Iterable, List, Dict, Union
 
 from airbyte_cdk import AirbyteLogger
@@ -25,7 +23,6 @@ from destination_redshift_no_dbt.jsonschema_to_tables import JsonToTables, PAREN
 from destination_redshift_no_dbt.s3_objects_manager import S3ObjectsManager
 from destination_redshift_no_dbt.stream import Stream
 from destination_redshift_no_dbt.table import AIRBYTE_EMITTED_AT, AIRBYTE_ID_NAME, Table
-from pydantic import ValidationError
 
 logger = logging.getLogger("airbyte")
 
@@ -36,23 +33,7 @@ class DestinationRedshiftNoDbt(Destination):
 
         self.csv_writers: Dict[str, CSVWriter] = dict()
 
-    def _parse_input_stream(self, input_stream: io.TextIOWrapper) -> Iterable[AirbyteMessage]:
-        """Reads from stdin, converting to Airbyte messages. Times out after 30 minutes without input"""
-        while True:
-            lines = select([input_stream], [], [], 30 * 60)[0]
-            if lines:
-                for line in lines:
-                    line = line.readline()
-                    if line != "":  # EOF
-                        try:
-                            yield AirbyteMessage.parse_raw(line)
-                        except ValidationError:
-                            logger.info(f"ignoring input which can't be deserialized as Airbyte Message: {line}")
-                    else:
-                        return
-            else:
-                logger.warning("Waited for 30 minutes without input ... Closing")
-                break
+        self._last_flushed_state = None
 
     def run_cmd(self, parsed_args: argparse.Namespace) -> Iterable[AirbyteMessage]:
         cmd = parsed_args.command
@@ -115,7 +96,13 @@ class DestinationRedshiftNoDbt(Destination):
         for message in input_messages:
             if message.type == Type.STATE:
                 self._flush()
-                yield message
+
+                current_state = message.state.json(exclude_unset=True)
+
+                if self._last_flushed_state != current_state:
+                    yield message
+
+                self._last_flushed_state = current_state
             elif message.type == Type.RECORD:
                 nested_record = DotMap({message.record.stream: message.record.data})
 
