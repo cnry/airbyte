@@ -2,154 +2,205 @@
   "streams": [
     {
       "stream": {
-        "name": "orders",
+        "name": "coupons",
         "json_schema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
           "type": "object",
-          "title": "Order",
-          "required": [
-            "account_number",
-            "order_number",
-            "item_number",
-            "serial_number",
-            "updated_at"
-          ],
           "properties": {
-            "account": {
-              "type": "object",
+            "id": {
+              "type": ["null", "string"],
+              "maxLength": 13
+            },
+            "code": {
+              "type": ["null", "string"],
+              "maxLength": 256
+            },
+            "name": {
+              "type": ["null", "string"],
+              "maxLength": 256
+            },
+            "state": {
+              "type": ["null", "string"],
+              "maxLength": 256
+            },
+            "max_redemptions": {
+              "type": ["null", "number"]
+            },
+            "max_redemptions_per_account": {
+              "type": ["null", "number"]
+            },
+            "unique_coupon_codes_count": {
+              "type": ["null", "number"]
+            },
+            "unique_code_template": {
+              "type": ["null", "string"],
+              "maxLength": 256
+            },
+            "duration": {
+              "type": ["null", "string"],
+              "maxLength": 256
+            },
+            "temporal_amount": {
+              "type": ["null", "number"]
+            },
+            "temporal_unit": {
+              "type": ["null", "string"],
+              "maxLength": 256
+            },
+            "free_trial_unit": {
+              "type": ["null", "string"],
+              "maxLength": 256
+            },
+            "free_trial_amount": {
+              "type": ["null", "number"]
+            },
+            "applies_to_all_plans": {
+              "type": ["null", "boolean"]
+            },
+            "applies_to_all_items": {
+              "type": ["null", "boolean"]
+            },
+            "applies_to_non_plan_charges": {
+              "type": ["null", "boolean"]
+            },
+            "plans": {
+              "type": ["null", "array"],
+              "title": "Plans",
+              "description": "A list of plans for which this coupon applies. This will be `null` if `applies_to_all_plans=true`.",
+              "items": {
+                "type": "object",
+                "title": "Plan mini details",
+                "description": "Just the important parts.",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "title": "Plan ID",
+                    "maxLength": 13,
+                    "readOnly": true
+                  },
+                  "code": {
+                    "type": "string",
+                    "title": "Plan code",
+                    "description": "Unique code to identify the plan. This is used in Hosted Payment Page URLs and in the invoice exports.",
+                    "maxLength": 13
+                  }
+                }
+              }
+            },
+            "items": {
+              "type": ["null", "array"],
+              "title": "Items",
+              "description": "A list of items for which this coupon applies. This will be\n`null` if `applies_to_all_items=true`.\n",
+              "items": {
+                "type": ["null", "object"],
+                "title": "Item mini details",
+                "description": "Just the important parts.",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "title": "Item ID",
+                    "maxLength": 13,
+                    "readOnly": true
+                  }
+                }
+              }
+            },
+            "redemption_resource": {
+              "type": ["null", "string"],
+              "maxLength": 256
+            },
+            "discount": {
+              "type": ["null", "object"],
+              "description": "Details of the discount a coupon applies. Will contain a `type`\nproperty and one of the following properties: `percent`, `fixed`, `trial`.\n",
               "properties": {
-                "id": {
-                  "type": "string"
+                "type": {
+                  "type": "string",
+                  "maxLength": 256
                 },
-                "addresses": {
+                "percent": {
+                  "description": "This is only present when `type=percent`.",
+                  "type": "integer"
+                },
+                "currencies": {
                   "type": "array",
+                  "description": "This is only present when `type=fixed`.",
                   "items": {
-                    "type": "object",
+                    "type": ["null", "object"],
                     "properties": {
-                      "id": {
-                        "type": "string"
+                      "currency": {
+                        "type": "string",
+                        "title": "Currency",
+                        "description": "3-letter ISO 4217 currency code.",
+                        "maxLength": 3
+                      },
+                      "amount": {
+                        "type": "number",
+                        "format": "float",
+                        "title": "Discount Amount",
+                        "description": "Value of the fixed discount that this coupon applies."
                       }
+                    }
+                  }
+                },
+                "trial": {
+                  "type": "object",
+                  "description": "This is only present when `type=free_trial`.",
+                  "properties": {
+                    "unit": {
+                      "title": "Trial unit",
+                      "description": "Temporal unit of the free trial",
+                      "type": "string",
+                      "maxLength": 256
+                    },
+                    "length": {
+                      "type": "integer",
+                      "title": "Trial length",
+                      "description": "Trial length measured in the units specified by the sibling `unit` property"
                     }
                   }
                 }
               }
             },
-            "city": {
-              "type": "string",
-              "title": "City",
-              "maxLength": 255
+            "coupon_type": {
+              "type": ["null", "string"],
+              "maxLength": 256
             },
-            "email": {
-              "type": "string",
-              "title": "Email",
-              "maxLength": 255
-            },
-            "company": {
-              "type": "string",
-              "title": "Company",
-              "maxLength": 255
-            },
-            "country": {
-              "type": "string",
-              "title": "Country",
-              "maxLength": 255
-            },
-            "quantity": {
-              "type": "integer",
-              "title": "Quantity",
-              "default": 0
-            },
-            "attention": {
-              "type": "string",
-              "title": "Attention",
+            "hosted_page_description": {
+              "type": ["null", "string"],
               "maxLength": 1024
             },
-            "carton_id": {
-              "type": "string",
-              "title": "Carton Id",
-              "maxLength": 255
+            "invoice_description": {
+              "type": ["null", "string"],
+              "maxLength": 1024
             },
-            "ship_date": {
-              "type": "string",
-              "title": "Ship Date",
-              "format": "date"
+            "redeem_by": {
+              "type": ["null", "string"],
+              "maxLength": 256
             },
-            "order_type": {
-              "type": "string",
-              "title": "Order Type",
-              "maxLength": 255
-            },
-            "updated_at": {
-              "type": "string",
-              "title": "Updated At",
+            "created_at": {
+              "type": ["null", "string"],
               "format": "date-time"
             },
-            "description": {
-              "type": "string",
-              "title": "Description",
-              "maxLength": 2048
+            "updated_at": {
+              "type": ["null", "string"],
+              "format": "date-time"
             },
-            "item_number": {
-              "type": "string",
-              "title": "Item Number",
-              "maxLength": 255
-            },
-            "postal_code": {
-              "type": "string",
-              "title": "Postal Code",
-              "maxLength": 255
-            },
-            "order_number": {
-              "type": "string",
-              "title": "Order Number",
-              "maxLength": 255
-            },
-            "serial_number": {
-              "type": "string",
-              "title": "Serial Number",
-              "maxLength": 255
-            },
-            "account_number": {
-              "type": "string",
-              "title": "Account Number",
-              "maxLength": 255
-            },
-            "state_province": {
-              "type": "string",
-              "title": "State Province",
-              "maxLength": 255
-            },
-            "customer_number": {
-              "type": "string",
-              "title": "Customer Number",
-              "maxLength": 255
-            },
-            "tracking_number": {
-              "type": "string",
-              "title": "Tracking Number",
-              "maxLength": 255
+            "expired_at": {
+              "type": ["null", "string"],
+              "format": "date-time"
             }
           }
         },
         "supported_sync_modes": ["full_refresh", "incremental"],
         "source_defined_cursor": true,
         "default_cursor_field": ["updated_at"],
-        "source_defined_primary_key": [
-          ["account_number"],
-          ["order_number"],
-          ["item_number"],
-          ["serial_number"]
-        ],
+        "source_defined_primary_key": [["id"]],
         "namespace": "dcl_local_ab"
       },
       "sync_mode": "full_refresh",
       "cursor_field": ["updated_at"],
       "destination_sync_mode": "append_dedup",
-      "primary_key": [
-        ["account_number"],
-        ["order_number"],
-        ["item_number"],
-        ["serial_number"]
-      ]
+      "primary_key": [["id"]]
     }
   ]
 }

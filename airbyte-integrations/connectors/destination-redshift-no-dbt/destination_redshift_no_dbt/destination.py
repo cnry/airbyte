@@ -33,6 +33,8 @@ class DestinationRedshiftNoDbt(Destination):
 
         self.csv_writers: Dict[str, CSVWriter] = dict()
 
+        self._last_flushed_state = None
+
     def run_cmd(self, parsed_args: argparse.Namespace) -> Iterable[AirbyteMessage]:
         cmd = parsed_args.command
 
@@ -94,7 +96,13 @@ class DestinationRedshiftNoDbt(Destination):
         for message in input_messages:
             if message.type == Type.STATE:
                 self._flush()
-                yield message
+
+                current_state = message.state.json(exclude_unset=True)
+
+                if self._last_flushed_state != current_state:
+                    yield message
+
+                self._last_flushed_state = current_state
             elif message.type == Type.RECORD:
                 nested_record = DotMap({message.record.stream: message.record.data})
 
