@@ -5,7 +5,7 @@
 
 from setuptools import find_packages, setup
 
-MAIN_REQUIREMENTS = ["airbyte-cdk~=0.1", "pydantic==1.9", "python-dateutil==2.8.2"]
+MAIN_REQUIREMENTS = ["airbyte-cdk~=0.1", "python-dateutil==2.8.2"]
 
 TEST_REQUIREMENTS = [
     "pytest~=6.1",
