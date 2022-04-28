@@ -9,9 +9,8 @@ class BaseModel(PydanticBaseModel):
                 field = [x for x in model.__fields__.values() if x.alias == prop][0]
                 if field.allow_none:
                     if "type" in value:
-                        value["anyOf"] = [{"type": value.pop("type")}]
+                        value["type"] = [value.pop("type"), "null"]
                     elif "$ref" in value:
                         if issubclass(field.type_, PydanticBaseModel):
                             value["title"] = field.type_.__config__.title or field.type_.__name__
-                        value["anyOf"] = [{"$ref": value.pop("$ref")}]
-                    value["anyOf"].append({"type": "null"})
+                        value["$ref"] = [value.pop("$ref"), "null"]
