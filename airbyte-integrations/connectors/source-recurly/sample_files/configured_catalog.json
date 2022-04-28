@@ -2,15 +2,3981 @@
   "streams": [
     {
       "stream": {
-        "name": "unique_coupons",
-        "supported_sync_modes": ["full_refresh", "incremental"],
+        "name": "account_coupon_redemptions",
+        "json_schema": {
+          "type": "object",
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "id": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 13
+            },
+            "state": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "coupon": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 13
+                },
+                "code": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 256
+                }
+              }
+            },
+            "account": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 13
+                },
+                "code": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 50
+                }
+              }
+            },
+            "currency": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 3
+            },
+            "created_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "date-time"
+            },
+            "discounted": {
+              "type": [
+                "null",
+                "number"
+              ]
+            },
+            "removed_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "date-time"
+            },
+            "updated_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "date-time"
+            },
+            "subscription_id": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 13
+            }
+          }
+        },
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
         "source_defined_cursor": true,
-        "default_cursor_field": ["updated_at"],
-        "source_defined_primary_key": [["id"]],
-        "json_schema": {}
+        "default_cursor_field": [
+          "updated_at"
+        ],
+        "source_defined_primary_key": [
+          [
+            "id"
+          ]
+        ]
       },
       "sync_mode": "incremental",
-      "destination_sync_mode": "overwrite"
+      "cursor_field": [
+        "updated_at"
+      ],
+      "destination_sync_mode": "append_dedup",
+      "primary_key": [
+        [
+          "id"
+        ]
+      ]
+    },
+    {
+      "stream": {
+        "name": "account_notes",
+        "json_schema": {
+          "type": "object",
+          "$schema": "http://json-schema.org/schema#",
+          "properties": {
+            "id": {
+              "type": "string",
+              "readOnly": true,
+              "maxLength": 13
+            },
+            "user": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "readOnly": true,
+                  "maxLength": 13
+                }
+              }
+            },
+            "message": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 2048
+            },
+            "account_id": {
+              "type": "string",
+              "maxLength": 13
+            },
+            "created_at": {
+              "type": "string",
+              "format": "date-time",
+              "readOnly": true
+            }
+          }
+        },
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
+        "source_defined_cursor": true,
+        "default_cursor_field": [
+          "created_at"
+        ],
+        "source_defined_primary_key": [
+          [
+            "id"
+          ]
+        ]
+      },
+      "sync_mode": "incremental",
+      "cursor_field": [
+        "created_at"
+      ],
+      "destination_sync_mode": "append_dedup",
+      "primary_key": [
+        [
+          "id"
+        ]
+      ]
+    },
+    {
+      "stream": {
+        "name": "accounts",
+        "json_schema": {
+          "type": "object",
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "id": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 13
+            },
+            "code": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "email": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "state": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "address": {
+              "type": "object",
+              "properties": {
+                "city": {
+                  "type": "string",
+                  "title": "City",
+                  "maxLength": 256
+                },
+                "phone": {
+                  "type": "string",
+                  "title": "Phone number",
+                  "maxLength": 256
+                },
+                "region": {
+                  "type": "string",
+                  "title": "State/Province",
+                  "maxLength": 256,
+                  "description": "State or province."
+                },
+                "country": {
+                  "type": "string",
+                  "title": "Country",
+                  "maxLength": 2,
+                  "description": "Country, 2-letter ISO 3166-1 alpha-2 code."
+                },
+                "street1": {
+                  "type": "string",
+                  "title": "Street 1",
+                  "maxLength": 256
+                },
+                "street2": {
+                  "type": "string",
+                  "title": "Street 2",
+                  "maxLength": 256
+                },
+                "postal_code": {
+                  "type": "string",
+                  "title": "Zip/Postal code",
+                  "maxLength": 256,
+                  "description": "Zip or postal code."
+                }
+              }
+            },
+            "bill_to": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 6
+            },
+            "company": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 50
+            },
+            "username": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "cc_emails": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "last_name": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "created_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "date-time"
+            },
+            "deleted_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "date-time"
+            },
+            "first_name": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "tax_exempt": {
+              "type": [
+                "null",
+                "boolean"
+              ]
+            },
+            "updated_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "date-time"
+            },
+            "vat_number": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 20
+            },
+            "custom_fields": {
+              "type": [
+                "null",
+                "array"
+              ]
+            },
+            "preferred_locale": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 12
+            },
+            "parent_account_id": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 13
+            },
+            "dunning_campaign_id": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "has_past_due_invoice": {
+              "type": [
+                "null",
+                "boolean"
+              ]
+            },
+            "exemption_certificate": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 30
+            },
+            "has_live_subscription": {
+              "type": [
+                "null",
+                "boolean"
+              ]
+            },
+            "has_active_subscription": {
+              "type": [
+                "null",
+                "boolean"
+              ]
+            },
+            "has_future_subscription": {
+              "type": [
+                "null",
+                "boolean"
+              ]
+            },
+            "has_paused_subscription": {
+              "type": [
+                "null",
+                "boolean"
+              ]
+            },
+            "has_canceled_subscription": {
+              "type": [
+                "null",
+                "boolean"
+              ]
+            }
+          }
+        },
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
+        "source_defined_cursor": true,
+        "default_cursor_field": [
+          "updated_at"
+        ],
+        "source_defined_primary_key": [
+          [
+            "id"
+          ]
+        ]
+      },
+      "sync_mode": "incremental",
+      "cursor_field": [
+        "updated_at"
+      ],
+      "destination_sync_mode": "append_dedup",
+      "primary_key": [
+        [
+          "id"
+        ]
+      ]
+    },
+    {
+      "stream": {
+        "name": "add_ons",
+        "json_schema": {
+          "type": "object",
+          "$schema": "http://json-schema.org/schema#",
+          "properties": {
+            "id": {
+              "type": "string",
+              "title": "Add-on ID",
+              "readOnly": true,
+              "maxLength": 13
+            },
+            "code": {
+              "type": "string",
+              "title": "Add-on code",
+              "maxLength": 50,
+              "description": "The unique identifier for the add-on within its plan."
+            },
+            "name": {
+              "type": "string",
+              "title": "Name",
+              "maxLength": 255,
+              "description": "Describes your add-on and will appear in subscribers' invoices."
+            },
+            "state": {
+              "type": "string",
+              "title": "State",
+              "readOnly": true,
+              "maxLength": 256,
+              "description": "Add-ons can be either active or inactive."
+            },
+            "plan_id": {
+              "type": "string",
+              "title": "Plan ID",
+              "readOnly": true,
+              "maxLength": 13
+            },
+            "optional": {
+              "type": [
+                "null",
+                "boolean"
+              ],
+              "title": "Optional",
+              "description": "Whether the add-on is optional for the customer to include in their purchase on the hosted payment page. If false, the add-on will be included when a subscription is created through the Recurly UI. However, the add-on will not be included when a subscription is created through the API."
+            },
+            "tax_code": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Tax code",
+              "maxLength": 50,
+              "description": "Used by Avalara, Vertex, and Recurly’s EU VAT tax feature. The tax code values are specific to each tax system. If you are using Recurly’s EU VAT feature you can use `unknown`, `physical`, or `digital`."
+            },
+            "tier_type": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Tier type",
+              "maxLength": 256,
+              "description": "The pricing model for the add-on.  For more information,\n[click here](https://docs.recurly.com/docs/billing-models#section-quantity-based). See our\n[Guide](https://developers.recurly.com/guides/item-addon-guide.html) for an overview of how\nto configure quantity-based pricing models.\n"
+            },
+            "created_at": {
+              "type": "string",
+              "title": "Created at",
+              "format": "date-time",
+              "readOnly": true
+            },
+            "currencies": {
+              "type": "array",
+              "items": {
+                "type": [
+                  "null",
+                  "object"
+                ],
+                "properties": {
+                  "currency": {
+                    "type": "string",
+                    "title": "Currency",
+                    "maxLength": 3,
+                    "description": "3-letter ISO 4217 currency code."
+                  },
+                  "unit_amount": {
+                    "type": "number",
+                    "title": "Discount Amount",
+                    "format": "float",
+                    "description": "Value of the fixed discount that this coupon applies."
+                  }
+                }
+              },
+              "description": "This is only present when `type=fixed`."
+            },
+            "deleted_at": {
+              "type": "string",
+              "title": "Deleted at",
+              "format": "date-time",
+              "readOnly": true
+            },
+            "updated_at": {
+              "type": "string",
+              "title": "Last updated at",
+              "format": "date-time",
+              "readOnly": true
+            },
+            "usage_type": {
+              "type": "string",
+              "title": "Usage Type",
+              "maxLength": 256,
+              "description": "Type of usage, returns usage type if `add_on_type` is `usage`."
+            },
+            "add_on_type": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Add-on Type",
+              "maxLength": 256,
+              "description": "Whether the add-on type is fixed, or usage-based."
+            },
+            "accounting_code": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Accounting code",
+              "maxLength": 256,
+              "description": "Accounting code for invoice line items for this add-on. If no value is provided, it defaults to add-on's code."
+            },
+            "default_quantity": {
+              "type": [
+                "null",
+                "integer"
+              ],
+              "title": "Default quantity",
+              "description": "Default quantity for the hosted pages."
+            },
+            "display_quantity": {
+              "type": [
+                "null",
+                "boolean"
+              ],
+              "title": "Display quantity?",
+              "description": "Determines if the quantity field is displayed on the hosted pages for the add-on."
+            },
+            "measured_unit_id": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Measured Unit ID",
+              "maxLength": 13,
+              "description": "System-generated unique identifier for an measured unit associated with the add-on."
+            },
+            "usage_percentage": {
+              "type": [
+                "null",
+                "number"
+              ],
+              "title": "Usage Percentage",
+              "format": "float",
+              "description": "The percentage taken of the monetary amount of usage tracked. This can be up to 4 decimal places. A value between 0.0 and 100.0."
+            },
+            "avalara_service_type": {
+              "type": [
+                "string",
+                "integer"
+              ],
+              "title": "Avalara Service Type",
+              "minimum": 0,
+              "description": "Used by Avalara for Communications taxes. The transaction type in combination with the service type describe how the add-on is taxed. Refer to [the documentation](https://help.avalara.com/AvaTax_for_Communications/Tax_Calculation/AvaTax_for_Communications_Tax_Engine/Mapping_Resources/TM_00115_AFC_Modules_Corresponding_Transaction_Types) for more available t/s types."
+            },
+            "revenue_schedule_type": {
+              "type": "string",
+              "title": "Revenue schedule type",
+              "maxLength": 256,
+              "description": "When this add-on is invoiced, the line item will use this revenue schedule. If `item_code`/`item_id` is part of the request then `revenue_schedule_type` must be absent in the request as the value will be set from the item."
+            },
+            "avalara_transaction_type": {
+              "type": [
+                "string",
+                "integer"
+              ],
+              "title": "Avalara Transaction Type",
+              "minimum": 0,
+              "description": "Used by Avalara for Communications taxes. The transaction type in combination with the service type describe how the add-on is taxed. Refer to [the documentation](https://help.avalara.com/AvaTax_for_Communications/Tax_Calculation/AvaTax_for_Communications_Tax_Engine/Mapping_Resources/TM_00115_AFC_Modules_Corresponding_Transaction_Types) for more available t/s types."
+            }
+          }
+        },
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
+        "source_defined_cursor": true,
+        "default_cursor_field": [
+          "updated_at"
+        ],
+        "source_defined_primary_key": [
+          [
+            "id"
+          ]
+        ]
+      },
+      "sync_mode": "incremental",
+      "cursor_field": [
+        "updated_at"
+      ],
+      "destination_sync_mode": "append_dedup",
+      "primary_key": [
+        [
+          "id"
+        ]
+      ]
+    },
+    {
+      "stream": {
+        "name": "billing_infos",
+        "json_schema": {
+          "type": "object",
+          "$schema": "http://json-schema.org/schema#",
+          "properties": {
+            "id": {
+              "type": "string",
+              "readOnly": true,
+              "maxLength": 13
+            },
+            "fraud": {
+              "type": "object",
+              "title": "Fraud information",
+              "readOnly": true,
+              "properties": {
+                "score": {
+                  "type": "integer",
+                  "title": "Kount score"
+                },
+                "decision": {
+                  "type": "string",
+                  "title": "Kount decision",
+                  "maxLength": 10
+                },
+                "risk_rules_triggered": {
+                  "type": "object",
+                  "title": "Kount rules"
+                }
+              },
+              "description": "Most recent fraud result."
+            },
+            "valid": {
+              "type": "boolean",
+              "readOnly": true
+            },
+            "address": {
+              "type": "object",
+              "properties": {
+                "city": {
+                  "type": "string",
+                  "title": "City",
+                  "maxLength": 256
+                },
+                "phone": {
+                  "type": "string",
+                  "title": "Phone number",
+                  "maxLength": 256
+                },
+                "region": {
+                  "type": "string",
+                  "title": "State/Province",
+                  "maxLength": 256,
+                  "description": "State or province."
+                },
+                "country": {
+                  "type": "string",
+                  "title": "Country",
+                  "maxLength": 2,
+                  "description": "Country, 2-letter ISO 3166-1 alpha-2 code."
+                },
+                "street1": {
+                  "type": "string",
+                  "title": "Street 1",
+                  "maxLength": 256
+                },
+                "street2": {
+                  "type": "string",
+                  "title": "Street 2",
+                  "maxLength": 256
+                },
+                "postal_code": {
+                  "type": "string",
+                  "title": "Zip/Postal code",
+                  "maxLength": 256,
+                  "description": "Zip or postal code."
+                }
+              }
+            },
+            "company": {
+              "type": "string",
+              "maxLength": 100
+            },
+            "last_name": {
+              "type": "string",
+              "maxLength": 50
+            },
+            "account_id": {
+              "type": "string",
+              "readOnly": true,
+              "maxLength": 13
+            },
+            "created_at": {
+              "type": "string",
+              "format": "date-time",
+              "readOnly": true,
+              "description": "When the billing information was created."
+            },
+            "first_name": {
+              "type": "string",
+              "maxLength": 50
+            },
+            "updated_at": {
+              "type": "string",
+              "format": "date-time",
+              "readOnly": true,
+              "description": "When the billing information was last changed."
+            },
+            "vat_number": {
+              "type": "string",
+              "maxLength": 20,
+              "description": "Customer's VAT number (to avoid having the VAT applied). This is only used for automatically collected invoices."
+            },
+            "payment_method": {
+              "type": "object",
+              "properties": {
+                "exp_year": {
+                  "type": "integer",
+                  "maxLength": 4,
+                  "description": "Expiration year."
+                },
+                "last_two": {
+                  "type": "string",
+                  "maxLength": 2,
+                  "description": "The IBAN bank account's last two digits."
+                },
+                "card_type": {
+                  "type": "string",
+                  "maxLength": 256,
+                  "description": "Visa, MasterCard, American Express, Discover, JCB, etc."
+                },
+                "exp_month": {
+                  "type": "integer",
+                  "maxLength": 2,
+                  "description": "Expiration month."
+                },
+                "first_six": {
+                  "type": "string",
+                  "maxLength": 6,
+                  "description": "Credit card number's first six digits."
+                },
+                "last_four": {
+                  "type": "string",
+                  "maxLength": 4,
+                  "description": "Credit card number's last four digits. Will refer to bank account if payment method is ACH."
+                },
+                "account_type": {
+                  "type": "string",
+                  "maxLength": 256,
+                  "description": "The bank account type. Only present for ACH payment methods."
+                },
+                "gateway_code": {
+                  "type": "string",
+                  "maxLength": 13,
+                  "description": "An identifier for a specific payment gateway."
+                },
+                "gateway_token": {
+                  "type": "string",
+                  "maxLength": 50,
+                  "description": "A token used in place of a credit card in order to perform transactions."
+                },
+                "cc_bin_country": {
+                  "type": "string",
+                  "maxLength": 256,
+                  "description": "The 2-letter ISO 3166-1 alpha-2 country code associated with the credit card BIN, if known by Recurly. Available on the BillingInfo object only. Available when the BIN country lookup feature is enabled."
+                },
+                "routing_number": {
+                  "type": "string",
+                  "maxLength": 256,
+                  "description": "The bank account's routing number. Only present for ACH payment methods."
+                },
+                "name_on_account": {
+                  "type": "string",
+                  "maxLength": 256,
+                  "description": "The name associated with the bank account."
+                },
+                "routing_number_bank": {
+                  "type": "string",
+                  "maxLength": 256,
+                  "description": "The bank name of this routing number."
+                },
+                "billing_agreement_id": {
+                  "type": "string",
+                  "maxLength": 256,
+                  "description": "Billing Agreement identifier. Only present for Amazon or Paypal payment methods."
+                }
+              }
+            },
+            "backup_payment_method": {
+              "type": "boolean",
+              "description": "The `backup_payment_method` field is used to indicate a billing info as a backup on the account that will be tried if the initial billing info used for an invoice is declined."
+            },
+            "primary_payment_method": {
+              "type": "boolean",
+              "description": "The `primary_payment_method` field is used to indicate the primary billing info on the account. The first billing info created on an account will always become primary. This payment method will be used"
+            }
+          }
+        },
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
+        "source_defined_cursor": true,
+        "default_cursor_field": [
+          "updated_at"
+        ],
+        "source_defined_primary_key": [
+          [
+            "id"
+          ]
+        ]
+      },
+      "sync_mode": "incremental",
+      "cursor_field": [
+        "updated_at"
+      ],
+      "destination_sync_mode": "append_dedup",
+      "primary_key": [
+        [
+          "id"
+        ]
+      ]
+    },
+    {
+      "stream": {
+        "name": "coupons",
+        "json_schema": {
+          "type": "object",
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "id": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 13
+            },
+            "code": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "name": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "items": {
+              "type": [
+                "null",
+                "array"
+              ],
+              "items": {
+                "type": [
+                  "null",
+                  "object"
+                ],
+                "title": "Item mini details",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "title": "Item ID",
+                    "readOnly": true,
+                    "maxLength": 13
+                  }
+                },
+                "description": "Just the important parts."
+              },
+              "title": "Items",
+              "description": "A list of items for which this coupon applies. This will be\n`null` if `applies_to_all_items=true`.\n"
+            },
+            "plans": {
+              "type": [
+                "null",
+                "array"
+              ],
+              "items": {
+                "type": "object",
+                "title": "Plan mini details",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "title": "Plan ID",
+                    "readOnly": true,
+                    "maxLength": 13
+                  },
+                  "code": {
+                    "type": "string",
+                    "title": "Plan code",
+                    "maxLength": 13,
+                    "description": "Unique code to identify the plan. This is used in Hosted Payment Page URLs and in the invoice exports."
+                  }
+                },
+                "description": "Just the important parts."
+              },
+              "title": "Plans",
+              "description": "A list of plans for which this coupon applies. This will be `null` if `applies_to_all_plans=true`."
+            },
+            "state": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "discount": {
+              "type": [
+                "null",
+                "object"
+              ],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "maxLength": 256
+                },
+                "trial": {
+                  "type": "object",
+                  "properties": {
+                    "unit": {
+                      "type": "string",
+                      "title": "Trial unit",
+                      "maxLength": 256,
+                      "description": "Temporal unit of the free trial"
+                    },
+                    "length": {
+                      "type": "integer",
+                      "title": "Trial length",
+                      "description": "Trial length measured in the units specified by the sibling `unit` property"
+                    }
+                  },
+                  "description": "This is only present when `type=free_trial`."
+                },
+                "percent": {
+                  "type": "integer",
+                  "description": "This is only present when `type=percent`."
+                },
+                "currencies": {
+                  "type": "array",
+                  "items": {
+                    "type": [
+                      "null",
+                      "object"
+                    ],
+                    "properties": {
+                      "amount": {
+                        "type": "number",
+                        "title": "Discount Amount",
+                        "format": "float",
+                        "description": "Value of the fixed discount that this coupon applies."
+                      },
+                      "currency": {
+                        "type": "string",
+                        "title": "Currency",
+                        "maxLength": 3,
+                        "description": "3-letter ISO 4217 currency code."
+                      }
+                    }
+                  },
+                  "description": "This is only present when `type=fixed`."
+                }
+              },
+              "description": "Details of the discount a coupon applies. Will contain a `type`\nproperty and one of the following properties: `percent`, `fixed`, `trial`.\n"
+            },
+            "duration": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "redeem_by": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "created_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "date-time"
+            },
+            "expired_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "date-time"
+            },
+            "updated_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "date-time"
+            },
+            "coupon_type": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "temporal_unit": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "free_trial_unit": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "max_redemptions": {
+              "type": [
+                "null",
+                "number"
+              ]
+            },
+            "temporal_amount": {
+              "type": [
+                "null",
+                "number"
+              ]
+            },
+            "free_trial_amount": {
+              "type": [
+                "null",
+                "number"
+              ]
+            },
+            "invoice_description": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 1024
+            },
+            "redemption_resource": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "applies_to_all_items": {
+              "type": [
+                "null",
+                "boolean"
+              ]
+            },
+            "applies_to_all_plans": {
+              "type": [
+                "null",
+                "boolean"
+              ]
+            },
+            "unique_code_template": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "hosted_page_description": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 1024
+            },
+            "unique_coupon_codes_count": {
+              "type": [
+                "null",
+                "number"
+              ]
+            },
+            "applies_to_non_plan_charges": {
+              "type": [
+                "null",
+                "boolean"
+              ]
+            },
+            "max_redemptions_per_account": {
+              "type": [
+                "null",
+                "number"
+              ]
+            }
+          }
+        },
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
+        "source_defined_cursor": true,
+        "default_cursor_field": [
+          "updated_at"
+        ],
+        "source_defined_primary_key": [
+          [
+            "id"
+          ]
+        ]
+      },
+      "sync_mode": "incremental",
+      "cursor_field": [
+        "updated_at"
+      ],
+      "destination_sync_mode": "append_dedup",
+      "primary_key": [
+        [
+          "id"
+        ]
+      ]
+    },
+    {
+      "stream": {
+        "name": "credit_payments",
+        "json_schema": {
+          "type": "object",
+          "$schema": "http://json-schema.org/schema#",
+          "properties": {
+            "id": {
+              "type": "string",
+              "title": "Credit Payment ID",
+              "maxLength": 13
+            },
+            "uuid": {
+              "type": "string",
+              "title": "Recurly UUID",
+              "maxLength": 32,
+              "description": "The UUID is useful for matching data with the CSV exports and building URLs into Recurly's UI."
+            },
+            "action": {
+              "type": "string",
+              "title": "Action",
+              "maxLength": 256,
+              "description": "The action for which the credit was created."
+            },
+            "amount": {
+              "type": "number",
+              "title": "Amount",
+              "format": "float",
+              "description": "Total credit payment amount applied to the charge invoice."
+            },
+            "account": {
+              "type": "object",
+              "title": "Account mini details",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "readOnly": true,
+                  "maxLength": 13
+                },
+                "code": {
+                  "type": "string",
+                  "maxLength": 50,
+                  "description": "The unique identifier of the account."
+                }
+              }
+            },
+            "currency": {
+              "type": "string",
+              "title": "Currency",
+              "maxLength": 3,
+              "description": "3-letter ISO 4217 currency code."
+            },
+            "voided_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Voided at",
+              "format": "date-time",
+              "readOnly": true
+            },
+            "created_at": {
+              "type": "string",
+              "title": "Created at",
+              "format": "date-time",
+              "readOnly": true
+            },
+            "updated_at": {
+              "type": "string",
+              "title": "Last updated at",
+              "format": "date-time",
+              "readOnly": true
+            },
+            "original_invoice": {
+              "type": [
+                "null",
+                "object"
+              ],
+              "title": "Invoice mini details",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "title": "Invoice ID",
+                  "maxLength": 13
+                },
+                "number": {
+                  "type": "string",
+                  "title": "Invoice number",
+                  "maxLength": 256
+                }
+              }
+            },
+            "applied_to_invoice": {
+              "type": [
+                "null",
+                "object"
+              ],
+              "title": "Invoice mini details",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "title": "Invoice ID",
+                  "maxLength": 13
+                },
+                "number": {
+                  "type": "string",
+                  "title": "Invoice number",
+                  "maxLength": 256
+                }
+              }
+            },
+            "refund_transaction": {
+              "type": [
+                "null",
+                "object"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "title": "Transaction ID",
+                  "maxLength": 13
+                },
+                "uuid": {
+                  "type": "string",
+                  "title": "Recurly UUID",
+                  "maxLength": 32,
+                  "description": "The UUID is useful for matching data with the CSV exports and building URLs into Recurly's UI."
+                }
+              }
+            },
+            "original_credit_payment_id": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Original Credit Payment ID",
+              "maxLength": 13,
+              "description": "For credit payments with action `refund`, this is the credit payment that was refunded."
+            }
+          }
+        },
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
+        "source_defined_cursor": true,
+        "default_cursor_field": [
+          "updated_at"
+        ],
+        "source_defined_primary_key": [
+          [
+            "id"
+          ]
+        ]
+      },
+      "sync_mode": "incremental",
+      "cursor_field": [
+        "updated_at"
+      ],
+      "destination_sync_mode": "append_dedup",
+      "primary_key": [
+        [
+          "id"
+        ]
+      ]
+    },
+    {
+      "stream": {
+        "name": "export_dates",
+        "json_schema": {
+          "type": "object",
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "dates": {
+              "type": [
+                "null",
+                "array"
+              ],
+              "items": {
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "maxLength": 256
+              }
+            }
+          }
+        },
+        "supported_sync_modes": [
+          "full_refresh"
+        ],
+        "default_cursor_field": [],
+        "source_defined_primary_key": []
+      },
+      "sync_mode": "full_refresh",
+      "cursor_field": [],
+      "destination_sync_mode": "overwrite",
+      "primary_key": []
+    },
+    {
+      "stream": {
+        "name": "invoices",
+        "json_schema": {
+          "type": "object",
+          "$schema": "http://json-schema.org/schema#",
+          "properties": {
+            "id": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Invoice ID",
+              "readOnly": true,
+              "maxLength": 13
+            },
+            "tax": {
+              "type": [
+                "null",
+                "number"
+              ],
+              "title": "Tax",
+              "format": "float",
+              "description": "The total tax on this invoice."
+            },
+            "paid": {
+              "type": [
+                "null",
+                "number"
+              ],
+              "title": "Paid",
+              "format": "float",
+              "description": "The total amount of successful payments transaction on this invoice."
+            },
+            "type": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Invoice type",
+              "maxLength": 256,
+              "description": "Invoices are either charge, credit, or legacy invoices."
+            },
+            "state": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Invoice state",
+              "maxLength": 256
+            },
+            "total": {
+              "type": [
+                "null",
+                "number"
+              ],
+              "title": "Total",
+              "format": "float",
+              "description": "The final total on this invoice. The summation of invoice charges, discounts, credits, and tax."
+            },
+            "due_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Due at",
+              "format": "date-time",
+              "description": "Date invoice is due. This is the date the net terms are reached."
+            },
+            "number": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Invoice number",
+              "maxLength": 256,
+              "description": "If VAT taxation and the Country Invoice Sequencing feature are enabled, invoices will have country-specific invoice numbers for invoices billed to EU countries (ex: FR1001). Non-EU invoices will continue to use the site-level invoice number sequence."
+            },
+            "origin": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Origin",
+              "maxLength": 256,
+              "description": "The event that created the invoice."
+            },
+            "account": {
+              "type": "object",
+              "title": "Account mini details",
+              "properties": {
+                "id": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "readOnly": true,
+                  "maxLength": 13
+                },
+                "code": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 50,
+                  "description": "The unique identifier of the account."
+                }
+              }
+            },
+            "address": {
+              "type": [
+                "null",
+                "object"
+              ],
+              "properties": {
+                "city": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "title": "City",
+                  "maxLength": 256
+                },
+                "phone": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "title": "Phone number",
+                  "maxLength": 256
+                },
+                "region": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "title": "State/Province",
+                  "maxLength": 256,
+                  "description": "State or province."
+                },
+                "company": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "title": "Company",
+                  "maxLength": 256
+                },
+                "country": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "title": "Country",
+                  "maxLength": 2,
+                  "description": "Country, 2-letter ISO 3166-1 alpha-2 code."
+                },
+                "street1": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "title": "Street 1",
+                  "maxLength": 256
+                },
+                "street2": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "title": "Street 2",
+                  "maxLength": 256
+                },
+                "last_name": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 256
+                },
+                "first_name": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 256
+                },
+                "postal_code": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "title": "Zip/Postal code",
+                  "maxLength": 256,
+                  "description": "Zip or postal code."
+                },
+                "name_on_account": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "title": "Name on account",
+                  "maxLength": 256
+                }
+              }
+            },
+            "balance": {
+              "type": [
+                "null",
+                "number"
+              ],
+              "title": "Balance",
+              "format": "float",
+              "description": "The outstanding balance remaining on this invoice."
+            },
+            "currency": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Currency",
+              "maxLength": 3,
+              "description": "3-letter ISO 4217 currency code."
+            },
+            "discount": {
+              "type": [
+                "null",
+                "number"
+              ],
+              "title": "Discount",
+              "format": "float",
+              "description": "Total discounts applied to this invoice."
+            },
+            "subtotal": {
+              "type": [
+                "null",
+                "number"
+              ],
+              "title": "Subtotal",
+              "format": "float",
+              "description": "The summation of charges and credits, before discounts and taxes."
+            },
+            "tax_info": {
+              "type": [
+                "null",
+                "object"
+              ],
+              "title": "Tax info",
+              "properties": {
+                "rate": {
+                  "type": [
+                    "null",
+                    "number"
+                  ],
+                  "title": "Rate",
+                  "format": "float"
+                },
+                "type": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "title": "Type",
+                  "maxLength": 256,
+                  "description": "Provides the tax type as \"vat\" for EU VAT, \"usst\" for U.S. Sales Tax, or the 2 letter country code for country level tax types like Canada, Australia, New Zealand, Israel, and all non-EU European countries."
+                },
+                "region": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "title": "Region",
+                  "description": "Provides the tax region applied on an invoice. For U.S. Sales Tax, this will be the 2 letter state code. For EU VAT this will be the 2 letter country code. For all country level tax types, this will display the regional tax, like VAT, GST, or PST."
+                },
+                "tax_details": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "title": "Tax detail",
+                    "properties": {
+                      "tax": {
+                        "type": [
+                          "null",
+                          "number"
+                        ],
+                        "title": "Tax",
+                        "format": "float",
+                        "description": "The total tax applied for this tax type."
+                      },
+                      "rate": {
+                        "type": [
+                          "null",
+                          "number"
+                        ],
+                        "title": "Rate",
+                        "format": "float",
+                        "description": "Provides the tax rate for the region."
+                      },
+                      "type": {
+                        "type": [
+                          "null",
+                          "string"
+                        ],
+                        "title": "Type",
+                        "maxLength": 256,
+                        "description": "Provides the tax type for the region. For Canadian Sales Tax, this will be GST, HST, QST or PST."
+                      },
+                      "region": {
+                        "type": [
+                          "null",
+                          "string"
+                        ],
+                        "title": "Region",
+                        "maxLength": 256,
+                        "description": "Provides the tax region applied on an invoice. For Canadian Sales Tax, this will be either the 2 letter province code or country code."
+                      }
+                    }
+                  },
+                  "description": "Provides additional tax details for Canadian Sales Tax when there is tax applied at both the country and province levels. This will only be populated for the Invoice response when fetching a single invoice and not for the InvoiceList or LineItem."
+                }
+              }
+            },
+            "closed_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Closed at",
+              "format": "date-time",
+              "description": "Date invoice was marked paid or failed."
+            },
+            "net_terms": {
+              "type": [
+                "null",
+                "integer"
+              ],
+              "title": "Net terms",
+              "default": 0,
+              "minimum": 0,
+              "description": "Integer representing the number of days after an invoice's creation that the invoice will become past due. If an invoice's net terms are set to '0', it is due 'On Receipt' and will become past due 24 hours after it’s created. If an invoice is due net 30, it will become past due at 31 days exactly."
+            },
+            "po_number": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Purchase order number",
+              "maxLength": 50,
+              "description": "For manual invoicing, this identifies the PO number associated with the subscription."
+            },
+            "created_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Created at",
+              "format": "date-time",
+              "readOnly": true
+            },
+            "line_items": {
+              "type": [
+                "null",
+                "array"
+              ],
+              "items": {
+                "type": [
+                  "null",
+                  "object"
+                ],
+                "title": "Line item",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "title": "Line item ID",
+                    "maxLength": 13
+                  },
+                  "uuid": {
+                    "type": "string",
+                    "title": "UUID",
+                    "maxLength": 32,
+                    "description": "The UUID is useful for matching data with the CSV exports and building URLs into Recurly's UI."
+                  }
+                }
+              },
+              "title": "Line Items"
+            },
+            "updated_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Last updated at",
+              "format": "date-time",
+              "readOnly": true
+            },
+            "vat_number": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "VAT number",
+              "maxLength": 20,
+              "description": "VAT registration number for the customer on this invoice. This will come from the VAT Number field in the Billing Info or the Account Info depending on your tax settings and the invoice collection method."
+            },
+            "transactions": {
+              "type": [
+                "null",
+                "array"
+              ],
+              "items": {
+                "type": [
+                  "null",
+                  "object"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "title": "Transaction ID",
+                    "maxLength": 13
+                  },
+                  "uuid": {
+                    "type": "string",
+                    "title": "Recurly UUID",
+                    "maxLength": 32,
+                    "description": "The UUID is useful for matching data with the CSV exports and building URLs into Recurly's UI."
+                  }
+                }
+              },
+              "title": "Transactions"
+            },
+            "customer_notes": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Customer notes",
+              "maxLength": 2048,
+              "description": "This will default to the Customer Notes text specified on the Invoice Settings. Specify custom notes to add or override Customer Notes."
+            },
+            "billing_info_id": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Billing info ID",
+              "maxLength": 256,
+              "description": "The `billing_info_id` is the value that represents a specific billing info for an end customer. When `billing_info_id` is used to assign billing info to the subscription, all future billing events for the subscription will bill to the specified billing info. `billing_info_id` can ONLY be used for sites utilizing the Wallet feature."
+            },
+            "credit_payments": {
+              "type": [
+                "null",
+                "array"
+              ],
+              "items": {
+                "type": [
+                  "null",
+                  "object"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "title": "Credit Payment ID",
+                    "maxLength": 13
+                  },
+                  "uuid": {
+                    "type": "string",
+                    "title": "Recurly UUID",
+                    "maxLength": 32,
+                    "description": "The UUID is useful for matching data with the CSV exports and building URLs into Recurly's UI."
+                  }
+                }
+              },
+              "title": "Credit payments"
+            },
+            "shipping_address": {
+              "type": [
+                "null",
+                "object"
+              ],
+              "properties": {
+                "id": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "title": "Shipping Address ID",
+                  "readOnly": true,
+                  "maxLength": 13
+                }
+              }
+            },
+            "subscription_ids": {
+              "type": [
+                "null",
+                "array"
+              ],
+              "items": {
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "title": "Subscription ID",
+                "maxLength": 13
+              },
+              "title": "Subscription IDs",
+              "description": "If the invoice is charging or refunding for one or more subscriptions, these are their IDs."
+            },
+            "collection_method": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Collection method",
+              "maxLength": 256,
+              "description": "An automatic invoice means a corresponding transaction is run using the account's billing information at the same time the invoice is created. Manual invoices are created without a corresponding transaction. The merchant must enter a manual payment transaction or have the customer pay the invoice with an automatic method, like credit card, PayPal, Amazon, or ACH bank payment."
+            },
+            "refundable_amount": {
+              "type": [
+                "null",
+                "number"
+              ],
+              "title": "Refundable amount",
+              "format": "float",
+              "description": "The refundable amount on a charge invoice. It will be null for all other invoices."
+            },
+            "dunning_campaign_id": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Dunning Campaign ID",
+              "maxLength": 256,
+              "description": "Unique ID to identify the dunning campaign used when dunning the invoice. Available when the Dunning Campaigns feature is enabled. For sites without multiple dunning campaigns enabled, this will always be the default dunning campaign."
+            },
+            "previous_invoice_id": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Previous invoice ID",
+              "maxLength": 13,
+              "description": "On refund invoices, this value will exist and show the invoice ID of the purchase invoice the refund was created from."
+            },
+            "terms_and_conditions": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Terms and conditions",
+              "maxLength": 16384,
+              "description": "This will default to the Terms and Conditions text specified on the Invoice Settings page in your Recurly admin. Specify custom notes to add or override Terms and Conditions."
+            },
+            "vat_reverse_charge_notes": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "VAT reverse charge notes",
+              "maxLength": 1024,
+              "description": "VAT Reverse Charge Notes only appear if you have EU VAT enabled or are using your own Avalara AvaTax account and the customer is in the EU, has a VAT number, and is in a different country than your own. This will default to the VAT Reverse Charge Notes text specified on the Tax Settings page in your Recurly admin, unless custom notes were created with the original subscription."
+            }
+          }
+        },
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
+        "source_defined_cursor": true,
+        "default_cursor_field": [
+          "updated_at"
+        ],
+        "source_defined_primary_key": [
+          [
+            "id"
+          ]
+        ]
+      },
+      "sync_mode": "incremental",
+      "cursor_field": [
+        "updated_at"
+      ],
+      "destination_sync_mode": "append_dedup",
+      "primary_key": [
+        [
+          "id"
+        ]
+      ]
+    },
+    {
+      "stream": {
+        "name": "line_items",
+        "json_schema": {
+          "type": "object",
+          "title": "Line item",
+          "$schema": "http://json-schema.org/schema#",
+          "properties": {
+            "id": {
+              "type": "string",
+              "title": "Line item ID",
+              "maxLength": 13
+            },
+            "tax": {
+              "type": [
+                "null",
+                "number"
+              ],
+              "title": "Tax",
+              "format": "float",
+              "description": "The tax amount for the line item."
+            },
+            "type": {
+              "type": "string",
+              "title": "Line item type",
+              "maxLength": 256,
+              "description": "Charges are positive line items that debit the account. Credits are negative line items that credit the account."
+            },
+            "uuid": {
+              "type": "string",
+              "title": "UUID",
+              "maxLength": 32,
+              "description": "The UUID is useful for matching data with the CSV exports and building URLs into Recurly's UI."
+            },
+            "state": {
+              "type": "string",
+              "title": "Current state of the line item",
+              "maxLength": 256,
+              "description": "Pending line items are charges or credits on an account that have not been applied to an invoice yet. Invoiced line items will always have an `invoice_id` value."
+            },
+            "amount": {
+              "type": "number",
+              "title": "Total after discounts and taxes",
+              "format": "float",
+              "description": "`(quantity * unit_amount) - (discount + tax)`"
+            },
+            "origin": {
+              "type": "string",
+              "title": "Origin of line item",
+              "maxLength": 256,
+              "description": "A credit created from an original charge will have the value of the charge's origin."
+            },
+            "refund": {
+              "type": "boolean",
+              "title": "Refund?"
+            },
+            "item_id": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Item ID",
+              "maxLength": 13,
+              "description": "System-generated unique identifier for an item. Available when the Credit Invoices and Subscription Billing Terms features are enabled."
+            },
+            "plan_id": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Plan ID",
+              "maxLength": 13,
+              "description": "If the line item is a charge or credit for a plan or add-on, this is the plan's ID."
+            },
+            "taxable": {
+              "type": "boolean",
+              "title": "Taxable?",
+              "description": "`true` if the line item is taxable, `false` if it is not."
+            },
+            "currency": {
+              "type": "string",
+              "title": "Currency",
+              "maxLength": 3,
+              "description": "3-letter ISO 4217 currency code."
+            },
+            "discount": {
+              "type": [
+                "null",
+                "number"
+              ],
+              "title": "Discount",
+              "format": "float",
+              "description": "The discount applied to the line item."
+            },
+            "end_date": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "End date",
+              "format": "date-time",
+              "description": "If this date is provided, it indicates the end of a time range."
+            },
+            "quantity": {
+              "type": "integer",
+              "title": "Quantity",
+              "default": 1,
+              "description": "This number will be multiplied by the unit amount to compute the subtotal before any discounts or taxes."
+            },
+            "subtotal": {
+              "type": "number",
+              "title": "Total before discounts and taxes",
+              "format": "float",
+              "description": "`quantity * unit_amount`"
+            },
+            "tax_code": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Tax code",
+              "maxLength": 50,
+              "description": "Used by Avalara, Vertex, and Recurly’s EU VAT tax feature. The tax code values are specific to each tax system. If you are using Recurly’s EU VAT feature you can use `unknown`, `physical`, or `digital`."
+            },
+            "add_on_id": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Add-on ID",
+              "maxLength": 13,
+              "description": "If the line item is a charge or credit for an add-on this is its ID."
+            },
+            "item_code": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Item Code",
+              "maxLength": 50,
+              "description": "Unique code to identify an item. Available when the Credit Invoices and Subscription Billing Terms features are enabled."
+            },
+            "plan_code": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Plan code",
+              "maxLength": 50,
+              "description": "If the line item is a charge or credit for a plan or add-on, this is the plan's code."
+            },
+            "created_at": {
+              "type": "string",
+              "title": "Created at",
+              "format": "date-time",
+              "description": "When the line item was created."
+            },
+            "invoice_id": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Invoice ID",
+              "maxLength": 13,
+              "description": "Once the line item has been invoiced this will be the invoice's ID."
+            },
+            "start_date": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Start date",
+              "format": "date-time",
+              "description": "If an end date is present, this is value indicates the beginning of a billing time range. If no end date is present it indicates billing for a specific date."
+            },
+            "tax_exempt": {
+              "type": "boolean",
+              "title": "Tax exempt?",
+              "description": "`true` exempts tax on charges, `false` applies tax on charges. If not defined, then defaults to the Plan and Site settings. This attribute does not work for credits (negative line items). Credits are always applied post-tax. Pre-tax discounts should use the Coupons feature."
+            },
+            "updated_at": {
+              "type": "string",
+              "title": "Last updated at",
+              "format": "date-time",
+              "description": "When the line item was last changed."
+            },
+            "add_on_code": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Add-on code",
+              "maxLength": 50,
+              "description": "If the line item is a charge or credit for an add-on, this is its code."
+            },
+            "description": {
+              "type": "string",
+              "title": "Description",
+              "maxLength": 255,
+              "description": "Description that appears on the invoice. For subscription related items this will be filled in automatically."
+            },
+            "unit_amount": {
+              "type": "number",
+              "title": "Unit amount",
+              "format": "float",
+              "description": "Positive amount for a charge, negative amount for a credit."
+            },
+            "external_sku": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "External SKU",
+              "maxLength": 50,
+              "description": "Optional Stock Keeping Unit assigned to an item. Available when the Credit Invoices and Subscription Billing Terms features are enabled."
+            },
+            "product_code": {
+              "type": "string",
+              "title": "Product code",
+              "maxLength": 50,
+              "description": "For plan-related line items this will be the plan's code, for add-on related line items it will be the add-on's code. For item-related line items it will be the item's `external_sku`."
+            },
+            "credit_applied": {
+              "type": [
+                "null",
+                "number"
+              ],
+              "title": "Credit Applied",
+              "format": "float",
+              "description": "The amount of credit from this line item that was applied to the invoice."
+            },
+            "invoice_number": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Invoice number",
+              "maxLength": 256,
+              "description": "Once the line item has been invoiced this will be the invoice's number. If VAT taxation and the Country Invoice Sequencing feature are enabled, invoices will have country-specific invoice numbers for invoices billed to EU countries (ex: FR1001). Non-EU invoices will continue to use the site-level invoice number sequence."
+            },
+            "proration_rate": {
+              "type": [
+                "null",
+                "number"
+              ],
+              "title": "Proration rate",
+              "format": "float",
+              "maximum": 1,
+              "minimum": 0,
+              "description": "When a line item has been prorated, this is the rate of the proration. Proration rates were made available for line items created after March 30, 2017. For line items created prior to that date, the proration rate will be `null`, even if the line item was prorated."
+            },
+            "accounting_code": {
+              "type": "string",
+              "title": "Accounting code",
+              "maxLength": 20,
+              "description": "Internal accounting code to help you reconcile your revenue to the correct ledger. Line items created as part of a subscription invoice will use the plan or add-on's accounting code, otherwise the value will only be present if you define an accounting code when creating the line item."
+            },
+            "legacy_category": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Legacy category",
+              "description": "Category to describe the role of a line item on a legacy invoice:\n- \"charges\" refers to charges being billed for on this invoice.\n- \"credits\" refers to refund or proration credits. This portion of the invoice can be considered a credit memo.\n- \"applied_credits\" refers to previous credits applied to this invoice. See their original_line_item_id to determine where the credit first originated.\n- \"carryforwards\" can be ignored. They exist to consume any remaining credit balance. A new credit with the same amount will be created and placed back on the account.\n"
+            },
+            "subscription_id": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Subscription ID",
+              "maxLength": 13,
+              "description": "If the line item is a charge or credit for a subscription, this is its ID."
+            },
+            "shipping_address": {
+              "type": [
+                "null",
+                "object"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "title": "Shipping Address ID",
+                  "readOnly": true,
+                  "maxLength": 13
+                }
+              }
+            },
+            "refunded_quantity": {
+              "type": [
+                "null",
+                "integer"
+              ],
+              "title": "Refunded Quantity",
+              "description": "For refund charges, the quantity being refunded. For non-refund charges, the total quantity refunded (possibly over multiple refunds)."
+            },
+            "credit_reason_code": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Credit reason code",
+              "default": "general",
+              "maxLength": 256,
+              "description": "The reason the credit was given when line item is `type=credit`."
+            },
+            "bill_for_account_id": {
+              "type": "string",
+              "title": "Bill For Account ID",
+              "maxLength": 13,
+              "description": "The UUID of the account responsible for originating the line item."
+            },
+            "unit_amount_decimal": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Unit amount decimal",
+              "description": "Positive amount for a charge, negative amount for a credit."
+            },
+            "previous_line_item_id": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Previous line item ID",
+              "maxLength": 13,
+              "description": "Will only have a value if the line item is a credit created from a previous credit, or if the credit was created from a charge refund."
+            },
+            "revenue_schedule_type": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Revenue schedule type",
+              "maxLength": 256
+            },
+            "original_line_item_invoice_id": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Original line item's invoice ID",
+              "maxLength": 13,
+              "description": "The invoice where the credit originated. Will only have a value if the line item is a credit created from a previous credit, or if the credit was created from a charge refund."
+            }
+          }
+        },
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
+        "source_defined_cursor": true,
+        "default_cursor_field": [
+          "updated_at"
+        ],
+        "source_defined_primary_key": [
+          [
+            "id"
+          ]
+        ]
+      },
+      "sync_mode": "incremental",
+      "cursor_field": [
+        "updated_at"
+      ],
+      "destination_sync_mode": "append_dedup",
+      "primary_key": [
+        [
+          "id"
+        ]
+      ]
+    },
+    {
+      "stream": {
+        "name": "measured_units",
+        "json_schema": {
+          "type": "object",
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "id": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 13
+            },
+            "name": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "state": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 255
+            },
+            "created_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "date-time"
+            },
+            "deleted_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "date-time"
+            },
+            "updated_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "date-time"
+            },
+            "description": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 1024
+            },
+            "display_name": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 255
+            }
+          }
+        },
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
+        "source_defined_cursor": true,
+        "default_cursor_field": [
+          "updated_at"
+        ],
+        "source_defined_primary_key": [
+          [
+            "id"
+          ]
+        ]
+      },
+      "sync_mode": "incremental",
+      "cursor_field": [
+        "updated_at"
+      ],
+      "destination_sync_mode": "append_dedup",
+      "primary_key": [
+        [
+          "id"
+        ]
+      ]
+    },
+    {
+      "stream": {
+        "name": "plans",
+        "json_schema": {
+          "type": "object",
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "id": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 13
+            },
+            "code": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "name": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "state": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "tax_code": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "auto_renew": {
+              "type": [
+                "null",
+                "boolean"
+              ]
+            },
+            "created_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "date-time"
+            },
+            "currencies": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "currency": {
+                    "type": "string",
+                    "title": "Currency",
+                    "maxLength": 3,
+                    "description": "3-letter ISO 4217 currency code."
+                  },
+                  "setup_fee": {
+                    "type": "number",
+                    "title": "Setup fee",
+                    "format": "float",
+                    "maximum": 1000000,
+                    "minimum": 0,
+                    "description": "Amount of one-time setup fee automatically charged at the beginning of a subscription billing cycle. For subscription plans with a trial, the setup fee will be charged at the time of signup. Setup fees do not increase with the quantity of a subscription plan."
+                  },
+                  "unit_amount": {
+                    "type": "number",
+                    "title": "Unit price",
+                    "format": "float",
+                    "maximum": 1000000,
+                    "minimum": 0
+                  }
+                }
+              },
+              "title": "Pricing"
+            },
+            "deleted_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "date-time"
+            },
+            "tax_exempt": {
+              "type": [
+                "null",
+                "boolean"
+              ]
+            },
+            "trial_unit": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "updated_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "date-time"
+            },
+            "description": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 1024
+            },
+            "hosted_pages": {
+              "type": "object",
+              "properties": {
+                "cancel_url": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 2048
+                },
+                "success_url": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 2048
+                },
+                "display_quantity": {
+                  "type": [
+                    "null",
+                    "boolean"
+                  ]
+                },
+                "bypass_confirmation": {
+                  "type": [
+                    "null",
+                    "boolean"
+                  ]
+                }
+              }
+            },
+            "trial_length": {
+              "type": [
+                "null",
+                "number"
+              ]
+            },
+            "interval_unit": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "accounting_code": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "interval_length": {
+              "type": [
+                "null",
+                "number"
+              ]
+            },
+            "dunning_campaign_id": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "avalara_service_type": {
+              "type": [
+                "null",
+                "number"
+              ]
+            },
+            "total_billing_cycles": {
+              "type": [
+                "null",
+                "number"
+              ]
+            },
+            "revenue_schedule_type": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "avalara_transaction_type": {
+              "type": [
+                "null",
+                "number"
+              ]
+            },
+            "setup_fee_accounting_code": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "trial_requires_billing_info": {
+              "type": [
+                "null",
+                "boolean"
+              ]
+            },
+            "allow_any_item_on_subscriptions": {
+              "type": [
+                "null",
+                "boolean"
+              ]
+            },
+            "setup_fee_revenue_schedule_type": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            }
+          }
+        },
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
+        "source_defined_cursor": true,
+        "default_cursor_field": [
+          "updated_at"
+        ],
+        "source_defined_primary_key": [
+          [
+            "id"
+          ]
+        ]
+      },
+      "sync_mode": "incremental",
+      "cursor_field": [
+        "updated_at"
+      ],
+      "destination_sync_mode": "append_dedup",
+      "primary_key": [
+        [
+          "id"
+        ]
+      ]
+    },
+    {
+      "stream": {
+        "name": "shipping_addresses",
+        "json_schema": {
+          "type": "object",
+          "$schema": "http://json-schema.org/schema#",
+          "properties": {
+            "id": {
+              "type": "string",
+              "title": "Shipping Address ID",
+              "readOnly": true,
+              "maxLength": 13
+            },
+            "city": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "email": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "phone": {
+              "type": "string",
+              "maxLength": 30
+            },
+            "region": {
+              "type": "string",
+              "maxLength": 255,
+              "description": "State or province."
+            },
+            "company": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "country": {
+              "type": "string",
+              "maxLength": 50,
+              "description": "Country, 2-letter ISO 3166-1 alpha-2 code."
+            },
+            "street1": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "street2": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "nickname": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "last_name": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "account_id": {
+              "type": "string",
+              "title": "Account ID",
+              "readOnly": true,
+              "maxLength": 13
+            },
+            "created_at": {
+              "type": "string",
+              "title": "Created at",
+              "format": "date-time",
+              "readOnly": true
+            },
+            "first_name": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "updated_at": {
+              "type": "string",
+              "title": "Updated at",
+              "format": "date-time",
+              "readOnly": true
+            },
+            "vat_number": {
+              "type": "string",
+              "maxLength": 20
+            },
+            "postal_code": {
+              "type": "string",
+              "maxLength": 20,
+              "description": "Zip or postal code."
+            }
+          }
+        },
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
+        "source_defined_cursor": true,
+        "default_cursor_field": [
+          "updated_at"
+        ],
+        "source_defined_primary_key": [
+          [
+            "id"
+          ]
+        ]
+      },
+      "sync_mode": "incremental",
+      "cursor_field": [
+        "updated_at"
+      ],
+      "destination_sync_mode": "append_dedup",
+      "primary_key": [
+        [
+          "id"
+        ]
+      ]
+    },
+    {
+      "stream": {
+        "name": "shipping_methods",
+        "json_schema": {
+          "type": "object",
+          "$schema": "http://json-schema.org/schema#",
+          "properties": {
+            "id": {
+              "type": "string",
+              "title": "Shipping Method ID",
+              "readOnly": true,
+              "maxLength": 13
+            },
+            "code": {
+              "type": "string",
+              "title": "Code",
+              "maxLength": 50,
+              "description": "The internal name used identify the shipping method."
+            },
+            "name": {
+              "type": "string",
+              "title": "Name",
+              "maxLength": 100,
+              "description": "The name of the shipping method displayed to customers."
+            },
+            "tax_code": {
+              "type": "string",
+              "title": "Tax code",
+              "maxLength": 50,
+              "description": "Used by Avalara, Vertex, and Recurly’s built-in tax feature. The tax\ncode values are specific to each tax system. If you are using Recurly’s\nbuilt-in taxes the values are:\n\n- `FR` – Common Carrier FOB Destination\n- `FR022000` – Common Carrier FOB Origin\n- `FR020400` – Non Common Carrier FOB Destination\n- `FR020500` – Non Common Carrier FOB Origin\n- `FR010100` – Delivery by Company Vehicle Before Passage of Title\n- `FR010200` – Delivery by Company Vehicle After Passage of Title\n- `NT` – Non-Taxable\n"
+            },
+            "created_at": {
+              "type": "string",
+              "title": "Created at",
+              "format": "date-time",
+              "readOnly": true
+            },
+            "deleted_at": {
+              "type": "string",
+              "title": "Deleted at",
+              "format": "date-time",
+              "readOnly": true
+            },
+            "updated_at": {
+              "type": "string",
+              "title": "Last updated at",
+              "format": "date-time",
+              "readOnly": true
+            },
+            "accounting_code": {
+              "type": "string",
+              "title": "Accounting Code",
+              "maxLength": 20,
+              "description": "Accounting code for shipping method."
+            }
+          }
+        },
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
+        "source_defined_cursor": true,
+        "default_cursor_field": [
+          "updated_at"
+        ],
+        "source_defined_primary_key": [
+          [
+            "id"
+          ]
+        ]
+      },
+      "sync_mode": "incremental",
+      "cursor_field": [
+        "updated_at"
+      ],
+      "destination_sync_mode": "append_dedup",
+      "primary_key": [
+        [
+          "id"
+        ]
+      ]
+    },
+    {
+      "stream": {
+        "name": "subscriptions",
+        "json_schema": {
+          "type": "object",
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "id": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 13
+            },
+            "tax": {
+              "type": [
+                "null",
+                "number"
+              ]
+            },
+            "plan": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 13
+                },
+                "code": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 256
+                }
+              }
+            },
+            "uuid": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 32
+            },
+            "state": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "total": {
+              "type": [
+                "null",
+                "number"
+              ]
+            },
+            "account": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 13
+                },
+                "code": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 256
+                }
+              }
+            },
+            "add_ons": {
+              "type": [
+                "null",
+                "array"
+              ],
+              "items": {
+                "type": [
+                  "null",
+                  "object"
+                ],
+                "title": "Subscription Add-on",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "title": "Subscription Add-on ID",
+                    "maxLength": 13
+                  },
+                  "code": {
+                    "type": "string",
+                    "title": "Add-on code",
+                    "maxLength": 50,
+                    "description": "The unique identifier for the add-on within its plan."
+                  }
+                },
+                "description": "This links an Add-on to a specific Subscription."
+              },
+              "title": "Add-ons"
+            },
+            "currency": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 3
+            },
+            "quantity": {
+              "type": [
+                "null",
+                "number"
+              ]
+            },
+            "shipping": {
+              "type": [
+                "null",
+                "object"
+              ],
+              "properties": {
+                "amount": {
+                  "type": [
+                    "null",
+                    "number"
+                  ]
+                },
+                "method": {
+                  "type": [
+                    "null",
+                    "object"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "title": "Shipping Method ID",
+                      "readOnly": true,
+                      "maxLength": 13
+                    }
+                  }
+                },
+                "address": {
+                  "type": [
+                    "null",
+                    "object"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "title": "Shipping Address ID",
+                      "readOnly": true,
+                      "maxLength": 13
+                    }
+                  }
+                }
+              }
+            },
+            "subtotal": {
+              "type": [
+                "null",
+                "number"
+              ]
+            },
+            "tax_info": {
+              "type": [
+                "null",
+                "object"
+              ],
+              "title": "Tax info",
+              "properties": {
+                "rate": {
+                  "type": "number",
+                  "title": "Rate",
+                  "format": "float"
+                },
+                "type": {
+                  "type": "string",
+                  "title": "Type",
+                  "maxLength": 256,
+                  "description": "Provides the tax type as \"vat\" for EU VAT, \"usst\" for U.S. Sales Tax, or the 2 letter country code for country level tax types like Canada, Australia, New Zealand, Israel, and all non-EU European countries."
+                },
+                "region": {
+                  "type": "string",
+                  "title": "Region",
+                  "maxLength": 256,
+                  "description": "Provides the tax region applied on an invoice. For U.S. Sales Tax, this will be the 2 letter state code. For EU VAT this will be the 2 letter country code. For all country level tax types, this will display the regional tax, like VAT, GST, or PST."
+                },
+                "tax_details": {
+                  "type": [
+                    "null",
+                    "array"
+                  ],
+                  "items": {
+                    "type": "object",
+                    "title": "Tax detail",
+                    "properties": {
+                      "tax": {
+                        "type": "number",
+                        "title": "Tax",
+                        "format": "float",
+                        "description": "The total tax applied for this tax type."
+                      },
+                      "rate": {
+                        "type": "number",
+                        "title": "Rate",
+                        "format": "float",
+                        "description": "Provides the tax rate for the region."
+                      },
+                      "type": {
+                        "type": "string",
+                        "title": "Type",
+                        "maxLength": 256,
+                        "description": "Provides the tax type for the region. For Canadian Sales Tax, this will be GST, HST, QST or PST."
+                      },
+                      "region": {
+                        "type": "string",
+                        "title": "Region",
+                        "maxLength": 256,
+                        "description": "Provides the tax region applied on an invoice. For Canadian Sales Tax, this will be either the 2 letter province code or country code."
+                      }
+                    }
+                  },
+                  "description": "Provides additional tax details for Canadian Sales Tax when there is tax applied at both the country and province levels. This will only be populated for the Invoice response when fetching a single invoice and not for the InvoiceList or LineItem."
+                }
+              }
+            },
+            "net_terms": {
+              "type": [
+                "null",
+                "number"
+              ]
+            },
+            "paused_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "date-time"
+            },
+            "po_number": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "auto_renew": {
+              "type": [
+                "null",
+                "boolean"
+              ]
+            },
+            "created_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "date-time"
+            },
+            "expires_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "date-time"
+            },
+            "updated_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "date-time"
+            },
+            "canceled_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "date-time"
+            },
+            "unit_amount": {
+              "type": [
+                "null",
+                "number"
+              ]
+            },
+            "activated_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "date-time"
+            },
+            "gateway_code": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "add_ons_total": {
+              "type": [
+                "null",
+                "number"
+              ]
+            },
+            "trial_ends_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "date-time"
+            },
+            "customer_notes": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 1024
+            },
+            "pending_change": {
+              "type": [
+                "null",
+                "object"
+              ],
+              "title": "Subscription Change",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "title": "Subscription Change ID",
+                  "maxLength": 13,
+                  "description": "The ID of the Subscription Change."
+                },
+                "activated": {
+                  "type": "boolean",
+                  "title": "Activated?",
+                  "description": "Returns `true` if the subscription change is activated."
+                },
+                "created_at": {
+                  "type": "string",
+                  "title": "Created at",
+                  "format": "date-time",
+                  "readOnly": true
+                },
+                "deleted_at": {
+                  "type": "string",
+                  "title": "Deleted at",
+                  "format": "date-time",
+                  "readOnly": true
+                },
+                "updated_at": {
+                  "type": "string",
+                  "title": "Updated at",
+                  "format": "date-time",
+                  "readOnly": true
+                },
+                "activate_at": {
+                  "type": "string",
+                  "title": "Activated at",
+                  "format": "date-time",
+                  "readOnly": true
+                },
+                "subscription_id": {
+                  "type": "string",
+                  "title": "Subscription ID",
+                  "maxLength": 13,
+                  "description": "The ID of the subscription that is going to be changed."
+                }
+              }
+            },
+            "billing_info_id": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 13
+            },
+            "trial_started_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "date-time"
+            },
+            "collection_method": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "expiration_reason": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 1024
+            },
+            "current_term_ends_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "date-time"
+            },
+            "terms_and_conditions": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 16384
+            },
+            "total_billing_cycles": {
+              "type": [
+                "null",
+                "number"
+              ]
+            },
+            "revenue_schedule_type": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "current_period_ends_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "date-time"
+            },
+            "remaining_pause_cycles": {
+              "type": [
+                "null",
+                "number"
+              ]
+            },
+            "renewal_billing_cycles": {
+              "type": [
+                "null",
+                "number"
+              ]
+            },
+            "current_term_started_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "date-time"
+            },
+            "remaining_billing_cycles": {
+              "type": [
+                "null",
+                "number"
+              ]
+            },
+            "current_period_started_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "date-time"
+            },
+            "bank_account_authorized_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "date-time"
+            }
+          }
+        },
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
+        "source_defined_cursor": true,
+        "default_cursor_field": [
+          "updated_at"
+        ],
+        "source_defined_primary_key": [
+          [
+            "id"
+          ]
+        ]
+      },
+      "sync_mode": "incremental",
+      "cursor_field": [
+        "updated_at"
+      ],
+      "destination_sync_mode": "append_dedup",
+      "primary_key": [
+        [
+          "id"
+        ]
+      ]
+    },
+    {
+      "stream": {
+        "name": "transactions",
+        "json_schema": {
+          "type": "object",
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "properties": {
+            "id": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 13
+            },
+            "type": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "uuid": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 32
+            },
+            "amount": {
+              "type": [
+                "null",
+                "number"
+              ]
+            },
+            "origin": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "status": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "account": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 13
+                },
+                "code": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 256
+                }
+              }
+            },
+            "invoice": {
+              "type": [
+                "null",
+                "object"
+              ],
+              "properties": {
+                "id": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 13
+                },
+                "number": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 256
+                }
+              }
+            },
+            "success": {
+              "type": [
+                "null",
+                "boolean"
+              ]
+            },
+            "currency": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 3
+            },
+            "refunded": {
+              "type": [
+                "null",
+                "boolean"
+              ]
+            },
+            "avs_check": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "cvv_check": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "voided_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "date-time"
+            },
+            "created_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "date-time"
+            },
+            "updated_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "date-time"
+            },
+            "status_code": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "collected_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "date-time"
+            },
+            "ip_address_v4": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "payment_method": {
+              "type": "object",
+              "properties": {
+                "exp_year": {
+                  "type": [
+                    "null",
+                    "number"
+                  ]
+                },
+                "last_two": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 2
+                },
+                "card_type": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 256
+                },
+                "exp_month": {
+                  "type": [
+                    "null",
+                    "number"
+                  ]
+                },
+                "first_six": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 6
+                },
+                "last_four": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 4
+                },
+                "account_type": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 256
+                },
+                "gateway_code": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 256
+                },
+                "gateway_token": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 256
+                },
+                "routing_number": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 256
+                },
+                "name_on_account": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 256
+                },
+                "routing_number_bank": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 256
+                },
+                "billing_agreement_id": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 256
+                }
+              }
+            },
+            "status_message": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 1024
+            },
+            "billing_address": {
+              "type": "object",
+              "properties": {
+                "city": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 256
+                },
+                "phone": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 256
+                },
+                "region": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 256
+                },
+                "country": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 256
+                },
+                "street1": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 256
+                },
+                "street2": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 256
+                },
+                "last_name": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 256
+                },
+                "first_name": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 256
+                },
+                "postal_code": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 256
+                }
+              }
+            },
+            "gateway_message": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "payment_gateway": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 13
+                }
+              }
+            },
+            "customer_message": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 1024
+            },
+            "subscription_ids": {
+              "type": "array",
+              "items": {
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "maxLength": 13
+              }
+            },
+            "collection_method": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "gateway_reference": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "voided_by_invoice": {
+              "type": [
+                "null",
+                "object"
+              ],
+              "properties": {
+                "id": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 13
+                },
+                "number": {
+                  "type": [
+                    "null",
+                    "string"
+                  ],
+                  "maxLength": 256
+                }
+              }
+            },
+            "ip_address_country": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "gateway_approval_code": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "gateway_response_code": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 256
+            },
+            "gateway_response_time": {
+              "type": [
+                "null",
+                "number"
+              ]
+            },
+            "customer_message_locale": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 12
+            },
+            "gateway_response_values": {
+              "type": "object"
+            },
+            "original_transaction_id": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "maxLength": 13
+            },
+            "backup_payment_method_used": {
+              "type": [
+                "null",
+                "boolean"
+              ]
+            }
+          }
+        },
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
+        "source_defined_cursor": true,
+        "default_cursor_field": [
+          "updated_at"
+        ],
+        "source_defined_primary_key": [
+          [
+            "id"
+          ]
+        ]
+      },
+      "sync_mode": "incremental",
+      "cursor_field": [
+        "updated_at"
+      ],
+      "destination_sync_mode": "append_dedup",
+      "primary_key": [
+        [
+          "id"
+        ]
+      ]
+    },
+    {
+      "stream": {
+        "name": "unique_coupons",
+        "json_schema": {
+          "type": "object",
+          "$schema": "http://json-schema.org/schema#",
+          "properties": {
+            "id": {
+              "type": "string",
+              "title": "Unique Coupon Code ID",
+              "readOnly": true,
+              "maxLength": 13
+            },
+            "code": {
+              "type": "string",
+              "title": "Coupon code",
+              "maxLength": 256,
+              "description": "The code the customer enters to redeem the coupon."
+            },
+            "state": {
+              "type": "string",
+              "title": "State",
+              "maxLength": 256,
+              "description": "Indicates if the unique coupon code is redeemable or why not."
+            },
+            "created_at": {
+              "type": "string",
+              "title": "Created at",
+              "format": "date-time",
+              "readOnly": true
+            },
+            "expired_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Expired at",
+              "format": "date-time",
+              "description": "The date and time the coupon was expired early or reached its `max_redemptions`."
+            },
+            "updated_at": {
+              "type": "string",
+              "title": "Updated at",
+              "format": "date-time",
+              "readOnly": true
+            },
+            "redeemed_at": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Redeemed at",
+              "format": "date-time",
+              "readOnly": true,
+              "description": "The date and time the unique coupon code was redeemed."
+            },
+            "bulk_coupon_id": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Bulk Coupon ID",
+              "readOnly": true,
+              "maxLength": 13,
+              "description": "The Coupon ID of the parent Bulk Coupon"
+            },
+            "bulk_coupon_code": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "title": "Bulk Coupon code",
+              "maxLength": 256,
+              "description": "The Coupon code of the parent Bulk Coupon"
+            }
+          },
+          "description": "A unique coupon code for a bulk coupon."
+        },
+        "supported_sync_modes": [
+          "full_refresh",
+          "incremental"
+        ],
+        "source_defined_cursor": true,
+        "default_cursor_field": [
+          "updated_at"
+        ],
+        "source_defined_primary_key": [
+          [
+            "id"
+          ]
+        ]
+      },
+      "sync_mode": "incremental",
+      "cursor_field": [
+        "updated_at"
+      ],
+      "destination_sync_mode": "append_dedup",
+      "primary_key": [
+        [
+          "id"
+        ]
+      ]
     }
   ]
 }
