@@ -140,7 +140,7 @@
            },
            "file": {
               "title": "file",
-              "type": "object",
+              "type": ["object", "null"],
               "properties": {
                  "id": {
                     "title": "id",

@@ -70,11 +70,18 @@ class IncrementalBabelforceStream(BabelforceStream, ABC):
     cursor_field = DEFAULT_CURSOR
 
     def get_updated_state(self, current_stream_state: MutableMapping[str, Any], latest_record: Mapping[str, Any]) -> Mapping[str, Any]:
-        current_updated_epoch = (current_stream_state or {}).get(self.cursor_field, int(mktime(datetime(1970, 1, 1).timetuple())))
+        current_updated_at = datetime(1970, 1, 1)
 
-        latest_record_updated_epoch = int(mktime(parser.parse(latest_record.get(self.cursor_field)).timetuple()))
+        if current_stream_state:
+            try:
+                current_updated_at = parser.parse(current_stream_state.get(self.cursor_field))
+            except ValueError:
+                pass
 
-        return {self.cursor_field: max(current_updated_epoch, latest_record_updated_epoch)}
+        current_updated_at = current_updated_at.replace(tzinfo=tzutc())
+        latest_record_updated_at = parser.parse(latest_record.get(self.cursor_field)).replace(tzinfo=tzutc())
+
+        return {self.cursor_field: max(latest_record_updated_at, current_updated_at).isoformat(timespec="seconds")}
 
 
 class Calls(IncrementalBabelforceStream):
