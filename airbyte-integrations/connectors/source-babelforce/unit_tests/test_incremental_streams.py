@@ -26,9 +26,9 @@ def test_cursor_field(patch_incremental_base_class):
 
 def test_get_updated_state(patch_incremental_base_class):
     stream = IncrementalBabelforceStream(region="services")
-    fake_date = parse("2022-02-01T00:00:00").astimezone(timezone.utc)
+    fake_date = "2022-02-01T00:00:00"
     inputs = {"current_stream_state": None, "latest_record": {DEFAULT_CURSOR: fake_date}}
-    expected_state = {DEFAULT_CURSOR: fake_date.replace(tzinfo=tzutc())}
+    expected_state = {DEFAULT_CURSOR: parse(fake_date).replace(tzinfo=tzutc())}
     assert stream.get_updated_state(**inputs) == expected_state
 
 

@@ -2,7 +2,6 @@ from datetime import datetime
 from unittest.mock import MagicMock
 
 import pytest
-from source_babelforce.models.call import Call
 
 from source_babelforce.source import Calls
 
@@ -49,11 +48,10 @@ def test_parse_response(patch_base_class):
         "recordings": [],
         "bridged": {}
     }
-    call_mock = Call(**fake_item)
 
     fake_call_json = {
         "items": [fake_item]
     }
     inputs = {"response": MagicMock(json=MagicMock(return_value=fake_call_json))}
     expected_parsed_object = {}
-    assert next(stream.parse_response(**inputs)) == call_mock.dict(exclude_unset=True)
+    assert next(stream.parse_response(**inputs)) == fake_item

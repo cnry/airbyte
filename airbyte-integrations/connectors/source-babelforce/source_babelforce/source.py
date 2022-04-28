@@ -1,24 +1,19 @@
 #
 # Copyright (c) 2021 Airbyte, Inc., all rights reserved.
 #
-import json
 import operator
 from abc import ABC
 from datetime import datetime
 from time import mktime
 from typing import Any, Iterable, List, Mapping, MutableMapping, Optional, Tuple
 
-import jsonref
 import requests
-from airbyte_cdk.entrypoint import logger
 from airbyte_cdk.sources import AbstractSource
 from airbyte_cdk.sources.streams import Stream
 from airbyte_cdk.sources.streams.http import HttpStream
 from airbyte_cdk.sources.streams.http.auth import HttpAuthenticator
 from dateutil import parser
 from dateutil.tz import tzutc
-
-from source_babelforce.models.call import Call
 
 DEFAULT_CURSOR = "dateCreated"
 
@@ -64,9 +59,10 @@ class BabelforceStream(HttpStream, ABC):
         # in-memory sort is performed
         items = response.json().get("items")
         items.sort(key=operator.itemgetter("dateCreated"))
+        keys = self.get_json_schema().get("properties").keys()
 
         for item in items:
-            yield Call(**item).dict(exclude_unset=True)
+            yield {key: val for key, val in item.items() if key in keys}
 
 
 # Basic incremental stream
@@ -76,11 +72,11 @@ class IncrementalBabelforceStream(BabelforceStream, ABC):
     def get_updated_state(self, current_stream_state: MutableMapping[str, Any], latest_record: Mapping[str, Any]) -> Mapping[str, Any]:
         current_updated_at_str = (current_stream_state or {}).get(self.cursor_field)
         try:
-            current_updated_at = parser.parse(current_updated_at_str, tzinfo=tzutc())
+            current_updated_at = parser.parse(current_updated_at_str).replace(tzinfo=tzutc())
         except TypeError:
             current_updated_at = datetime(1970, 1, 1, tzinfo=tzutc())
 
-        latest_record_updated_at = latest_record.get(self.cursor_field).replace(tzinfo=tzutc())
+        latest_record_updated_at = parser.parse(latest_record.get(self.cursor_field)).replace(tzinfo=tzutc())
 
         return {self.cursor_field: max(latest_record_updated_at, current_updated_at)}
 
@@ -98,9 +94,6 @@ class Calls(IncrementalBabelforceStream):
             self, stream_state: Mapping[str, Any] = None, stream_slice: Mapping[str, Any] = None, next_page_token: Mapping[str, Any] = None
     ) -> str:
         return "calls/reporting"
-
-    def get_json_schema(self) -> Mapping[str, Any]:
-        return json.loads(json.dumps(jsonref.loads(Call.schema_json()), default=dict))
 
     def request_params(
             self, stream_state: Mapping[str, Any], stream_slice: Mapping[str, any] = None, next_page_token: Mapping[str, Any] = None
