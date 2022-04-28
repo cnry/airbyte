@@ -41,7 +41,7 @@ class CallRecording(BaseModel):
     duration: int
     url: str
     tags: List[str]
-    file: Optional[CallRecordingFile]
+    file: CallRecordingFile
     state: Annotated[str, Field(max_length=256)]
     agent: CallAgent
 
