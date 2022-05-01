@@ -11,8 +11,7 @@ RUN apk --no-cache upgrade \
     && pip install --upgrade pip \
     && curl https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer | bash \
     && export PATH="/root/.pyenv/bin:$PATH" \
-    && pyenv rehash && hash -r \
-    && eval "$(pyenv init -)" \
+    && eval "$(pyenv init - --no-rehash)"
     && eval "$(pyenv virtualenv-init -)" \
     && pyenv install 3.9.11
 
