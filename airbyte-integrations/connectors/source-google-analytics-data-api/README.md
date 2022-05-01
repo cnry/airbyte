@@ -37,7 +37,7 @@ From the Airbyte repository root, run:
 
 #### Create credentials
 **If you are a community contributor**, follow the instructions in the [documentation](https://docs.airbyte.io/integrations/sources/google-analytics-data-api)
-to generate the necessary credentials. Then create a file `secrets/config.json` conforming to the `source_google_analytics_data_api/spec.yaml` file.
+to generate the necessary credentials. Then create a file `secrets/config.json` conforming to the `source_google_analytics_data_api/spec.{yaml,json}` file.
 Note that the `secrets` directory is gitignored by default, so there is no danger of accidentally checking in sensitive information.
 See `integration_tests/sample_config.json` for a sample config file.
 

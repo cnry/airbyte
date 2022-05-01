@@ -17,7 +17,7 @@ from airbyte_cdk.models import (
     AirbyteStream,
     ConfiguredAirbyteCatalog,
     Status,
-    Type, SyncMode,
+    Type, SyncMode, AirbyteStateMessage,
 )
 from airbyte_cdk.sources import Source
 from google.analytics.data_v1beta import BetaAnalyticsDataClient, Dimension, RunReportResponse
@@ -25,6 +25,8 @@ from google.analytics.data_v1beta.types import DateRange
 from google.analytics.data_v1beta.types import Metric
 from google.analytics.data_v1beta.types import RunReportRequest
 from google.oauth2 import service_account
+
+DEFAULT_CURSOR_FIELD = "date"
 
 
 class SourceGoogleAnalyticsDataApi(Source):
@@ -36,7 +38,7 @@ class SourceGoogleAnalyticsDataApi(Source):
         :param logger: Logging object to display debug/info/error to the logs
             (logs will not be accessible via airbyte UI if they are not passed to this logger)
         :param config: Json object containing the configuration of this source, content of this json is as specified in
-        the properties of the spec.yaml file
+        the properties of the spec.json/spec.yaml file
 
         :return: AirbyteConnectionStatus indicating a Success or Failure
         """
@@ -60,7 +62,7 @@ class SourceGoogleAnalyticsDataApi(Source):
         :param logger: Logging object to display debug/info/error to the logs
             (logs will not be accessible via airbyte UI if they are not passed to this logger)
         :param config: Json object containing the configuration of this source, content of this json is as specified in
-        the properties of the spec.yaml file
+        the properties of the spec.json/spec.yaml file
 
         :return: AirbyteCatalog is an object describing a list of all available streams in this source.
             A stream is an AirbyteStream object that includes:
@@ -72,7 +74,8 @@ class SourceGoogleAnalyticsDataApi(Source):
 
         response = SourceGoogleAnalyticsDataApi._run_report(config)
 
-        properties = dict()
+        properties = {DEFAULT_CURSOR_FIELD: {"type": "string"}}
+
         for dimension in response.dimension_headers:
             properties[dimension.name] = {"type": "string"}
 
@@ -85,11 +88,14 @@ class SourceGoogleAnalyticsDataApi(Source):
             "properties": properties,
         }
 
+        dimensions = list(map(lambda h: [h.name], response.dimension_headers))
+
         stream = AirbyteStream(
             name=report_name,
             json_schema=json_schema,
             supported_sync_modes=[SyncMode.full_refresh, SyncMode.incremental],
-            source_defined_primary_key=list(map(lambda h: [h.name], response.dimension_headers))
+            source_defined_primary_key=dimensions,
+            default_cursor_field=[DEFAULT_CURSOR_FIELD]
         )
         return AirbyteCatalog(streams=[stream])
 
@@ -103,7 +109,7 @@ class SourceGoogleAnalyticsDataApi(Source):
         :param logger: Logging object to display debug/info/error to the logs
             (logs will not be accessible via airbyte UI if they are not passed to this logger)
         :param config: Json object containing the configuration of this source, content of this json is as specified in
-            the properties of the spec.yaml file
+            the properties of the spec.json/spec.yaml file
         :param catalog: The input catalog is a ConfiguredAirbyteCatalog which is almost the same as AirbyteCatalog
             returned by discover(), but
         in addition, it's been configured in the UI! For each particular stream and field, there may have been provided
@@ -119,14 +125,24 @@ class SourceGoogleAnalyticsDataApi(Source):
 
         response = self._run_report(config)
 
-        for row in response.rows:
-            data = dict(zip(list(map(lambda h: h.name, response.dimension_headers)), list(map(lambda v: v.value, row.dimension_values))))
-            data.update(dict(zip(list(map(lambda h: h.name, response.metric_headers)), list(map(lambda v: v.value, row.metric_values)))))
+        dimensions = list(map(lambda h: h.name, response.dimension_headers))
+        metrics = list(map(lambda h: h.name, response.metric_headers))
 
-            yield AirbyteMessage(
-                type=Type.RECORD,
-                record=AirbyteRecordMessage(stream=report_name, data=data, emitted_at=int(datetime.now().timestamp()) * 1000),
-            )
+        last_cursor_value = state.get(report_name, {}).get(DEFAULT_CURSOR_FIELD, "")
+
+        for row in response.rows:
+            data = dict(zip(dimensions, list(map(lambda v: v.value, row.dimension_values))))
+            data.update(dict(zip(metrics, list(map(lambda v: float(v.value), row.metric_values)))))
+
+            if last_cursor_value <= data[DEFAULT_CURSOR_FIELD]:
+                yield AirbyteMessage(
+                    type=Type.RECORD,
+                    record=AirbyteRecordMessage(stream=report_name, data=data, emitted_at=int(datetime.now().timestamp()) * 1000),
+                )
+
+                last_cursor_value = data[DEFAULT_CURSOR_FIELD]
+
+        yield AirbyteMessage(type=Type.STATE, state=AirbyteStateMessage(data={report_name: {DEFAULT_CURSOR_FIELD: last_cursor_value}}))
 
     @staticmethod
     def _client(json_credentials: Mapping[str, str]) -> BetaAnalyticsDataClient:
