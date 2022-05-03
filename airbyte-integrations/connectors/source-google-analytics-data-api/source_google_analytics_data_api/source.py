@@ -88,7 +88,7 @@ class SourceGoogleAnalyticsDataApi(Source):
             "properties": properties,
         }
 
-        primary_key = list(map(lambda h: [h.name], response.dimension_headers)) + [[DEFAULT_CURSOR_FIELD]]
+        primary_key = list(map(lambda h: [h.name], response.dimension_headers))
 
         stream = AirbyteStream(
             name=report_name,
