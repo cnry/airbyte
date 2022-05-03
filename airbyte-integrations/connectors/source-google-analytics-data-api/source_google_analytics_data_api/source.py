@@ -20,7 +20,7 @@ from airbyte_cdk.models import (
     Type, SyncMode, AirbyteStateMessage,
 )
 from airbyte_cdk.sources import Source
-from google.analytics.data_v1beta import BetaAnalyticsDataClient, Dimension, RunReportResponse
+from google.analytics.data_v1beta import BetaAnalyticsDataClient, Dimension, RunReportResponse, OrderBy
 from google.analytics.data_v1beta.types import DateRange
 from google.analytics.data_v1beta.types import Metric
 from google.analytics.data_v1beta.types import RunReportRequest
@@ -88,13 +88,13 @@ class SourceGoogleAnalyticsDataApi(Source):
             "properties": properties,
         }
 
-        dimensions = list(map(lambda h: [h.name], response.dimension_headers))
+        primary_key = list(map(lambda h: [h.name], response.dimension_headers)) + [[DEFAULT_CURSOR_FIELD]]
 
         stream = AirbyteStream(
             name=report_name,
             json_schema=json_schema,
             supported_sync_modes=[SyncMode.full_refresh, SyncMode.incremental],
-            source_defined_primary_key=dimensions,
+            source_defined_primary_key=primary_key,
             default_cursor_field=[DEFAULT_CURSOR_FIELD]
         )
         return AirbyteCatalog(streams=[stream])
@@ -153,7 +153,9 @@ class SourceGoogleAnalyticsDataApi(Source):
     def _run_report(config: Mapping[str, Any]) -> RunReportResponse:
         property_id = config.get("property_id")
 
-        dimensions = [Dimension(name=dimension) for dimension in config.get("dimensions", "").split(", ")]
+        dimensions = [Dimension(name=dim) for dim in config.get("dimensions", "").split(", ") if dim != DEFAULT_CURSOR_FIELD]
+        dimensions.append(Dimension(name=DEFAULT_CURSOR_FIELD))
+
         metrics = [Metric(name=metric) for metric in config.get("metrics", "").split(", ")]
 
         date_ranges_start_date = config.get("date_ranges_start_date")
@@ -165,6 +167,14 @@ class SourceGoogleAnalyticsDataApi(Source):
             property=f"properties/{property_id}",
             dimensions=dimensions,
             metrics=metrics,
-            date_ranges=[DateRange(start_date=date_ranges_start_date, end_date=date_ranges_end_date)]
+            date_ranges=[DateRange(start_date=date_ranges_start_date, end_date=date_ranges_end_date)],
+            order_bys=[
+                OrderBy(
+                    dimension=OrderBy.DimensionOrderBy(
+                        dimension_name=DEFAULT_CURSOR_FIELD,
+                        order_type=OrderBy.DimensionOrderBy.OrderType.ALPHANUMERIC
+                    )
+                )
+            ]
         )
         return client.run_report(request)
