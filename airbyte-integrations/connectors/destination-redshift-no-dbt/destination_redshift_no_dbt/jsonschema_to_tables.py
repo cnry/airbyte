@@ -9,7 +9,7 @@ PARENT_CHILD_SPLITTER = "."
 
 
 class JsonToTables:
-    def __init__(self, json_schema: dict, schema: str, root_table: str, primary_keys: Optional[List[str]]):
+    def __init__(self, json_schema: dict, schema: str, root_table: str, primary_keys: Optional[List[List[str]]]):
         self.json_schema = json_schema
 
         self.schema = schema
@@ -23,9 +23,10 @@ class JsonToTables:
             if item_key == "properties":
                 self._extract_tables(item_value, name=self.root, primary_keys=self.primary_keys)
 
-    def _extract_tables(self, properties: dict, name: str, primary_keys: List[str] = None, references: Table = None):
+    def _extract_tables(self, properties: dict, name: str, primary_keys: List[List[str]] = None, references: Table = None):
         table_name = name.replace(PARENT_CHILD_SPLITTER, "_")
-        table = Table(schema=self.schema, name=table_name, primary_keys=primary_keys, references=references)
+        table_primary_keys = list(map(lambda pk: pk[-1], filter(lambda pks: pks[0:-1] == name.split("."), primary_keys or [[]])))
+        table = Table(schema=self.schema, name=table_name, primary_keys=table_primary_keys, references=references)
         self.tables[name] = table
 
         for property_key, property_value in properties.items():
@@ -47,7 +48,12 @@ class JsonToTables:
     def _convert_object_to_table(self, name: str, property_key: str, property_value: dict, references: Table):
         if "properties" in property_value:
             properties = property_value.get("properties")
-            self._extract_tables(properties=properties, name=f"{name}.{property_key}", references=references)
+            self._extract_tables(
+                properties=properties,
+                name=f"{name}.{property_key}",
+                primary_keys=self.primary_keys,
+                references=references
+            )
         else:  # If no `properties`, treat the field as a string
             references.fields.append(Field(name=property_key, data_type=FALLBACK_DATATYPE))
 

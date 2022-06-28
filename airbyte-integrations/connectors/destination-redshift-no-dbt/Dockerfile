@@ -36,5 +36,5 @@ COPY destination_redshift_no_dbt ./destination_redshift_no_dbt
 ENV AIRBYTE_ENTRYPOINT "python /airbyte/integration_code/main.py"
 ENTRYPOINT ["python", "/airbyte/integration_code/main.py"]
 
-LABEL io.airbyte.version=0.1.6
+LABEL io.airbyte.version=0.1.7
 LABEL io.airbyte.name=airbyte/destination-redshift-no-dbt

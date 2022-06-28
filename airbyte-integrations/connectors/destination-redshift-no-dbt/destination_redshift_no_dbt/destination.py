@@ -186,7 +186,7 @@ class DestinationRedshiftNoDbt(Destination):
         for stream in configured_catalog.streams:
             schema = stream.stream.namespace
             stream_name = stream.stream.name
-            primary_keys = reduce(iconcat, stream.primary_key, [])
+            primary_keys = list(map(lambda pks: [stream_name] + pks, stream.primary_key)) or [[]]
 
             converter = JsonToTables(stream.stream.json_schema, schema=schema, root_table=stream_name, primary_keys=primary_keys)
             converter.convert()
@@ -203,6 +203,7 @@ class DestinationRedshiftNoDbt(Destination):
 
                 if stream.destination_sync_mode == DestinationSyncMode.overwrite:
                     cursor.execute(table.truncate_statement())
+
 
     def _initialize_staging_schema(self):
         cursor = self._get_connection(autocommit=True).cursor()
