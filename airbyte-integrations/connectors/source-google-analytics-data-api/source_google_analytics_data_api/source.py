@@ -1,12 +1,12 @@
 #
-# Copyright (c) 2021 Airbyte, Inc., all rights reserved.
+# Copyright (c) 2022 Airbyte, Inc., all rights reserved.
 #
 
 
 import json
 import logging
 from datetime import datetime
-from typing import Generator, Any, MutableMapping, Mapping
+from typing import Any, Generator, Mapping, MutableMapping
 
 from airbyte_cdk.logger import AirbyteLogger
 from airbyte_cdk.models import (
@@ -14,19 +14,16 @@ from airbyte_cdk.models import (
     AirbyteConnectionStatus,
     AirbyteMessage,
     AirbyteRecordMessage,
+    AirbyteStateMessage,
     AirbyteStream,
     ConfiguredAirbyteCatalog,
     Status,
-    Type, SyncMode, AirbyteStateMessage,
+    SyncMode,
+    Type,
 )
 from airbyte_cdk.sources import Source
-from google.analytics.data_v1beta import BetaAnalyticsDataClient, Dimension, RunReportResponse, OrderBy
-from google.analytics.data_v1beta.types import DateRange
-from google.analytics.data_v1beta.types import Metric
-from google.analytics.data_v1beta.types import RunReportRequest
-from google.oauth2 import service_account
-
-DEFAULT_CURSOR_FIELD = "date"
+from google.analytics.data_v1beta import RunReportResponse
+from source_google_analytics_data_api.client import DEFAULT_CURSOR_FIELD, Client
 
 
 class SourceGoogleAnalyticsDataApi(Source):
@@ -43,10 +40,6 @@ class SourceGoogleAnalyticsDataApi(Source):
         :return: AirbyteConnectionStatus indicating a Success or Failure
         """
         try:
-            config["metrics"] = "activeUsers"
-            config["date_ranges_start_date"] = "yesterday"
-            config["date_ranges_end_date"] = "today"
-
             self._run_report(config)
 
             return AirbyteConnectionStatus(status=Status.SUCCEEDED)
@@ -72,7 +65,7 @@ class SourceGoogleAnalyticsDataApi(Source):
         """
         report_name = config.get("report_name")
 
-        response = SourceGoogleAnalyticsDataApi._run_report(config)
+        response = self._run_report(config)
 
         properties = {DEFAULT_CURSOR_FIELD: {"type": "string"}}
 
@@ -95,7 +88,7 @@ class SourceGoogleAnalyticsDataApi(Source):
             json_schema=json_schema,
             supported_sync_modes=[SyncMode.full_refresh, SyncMode.incremental],
             source_defined_primary_key=primary_key,
-            default_cursor_field=[DEFAULT_CURSOR_FIELD]
+            default_cursor_field=[DEFAULT_CURSOR_FIELD],
         )
         return AirbyteCatalog(streams=[stream])
 
@@ -124,57 +117,28 @@ class SourceGoogleAnalyticsDataApi(Source):
         report_name = config.get("report_name")
 
         response = self._run_report(config)
-
-        dimensions = list(map(lambda h: h.name, response.dimension_headers))
-        metrics = list(map(lambda h: h.name, response.metric_headers))
+        rows = Client.response_to_list(response)
 
         last_cursor_value = state.get(report_name, {}).get(DEFAULT_CURSOR_FIELD, "")
 
-        for row in response.rows:
-            data = dict(zip(dimensions, list(map(lambda v: v.value, row.dimension_values))))
-            data.update(dict(zip(metrics, list(map(lambda v: float(v.value), row.metric_values)))))
-
-            if last_cursor_value <= data[DEFAULT_CURSOR_FIELD]:
+        for row in rows:
+            if last_cursor_value <= row[DEFAULT_CURSOR_FIELD]:
                 yield AirbyteMessage(
                     type=Type.RECORD,
-                    record=AirbyteRecordMessage(stream=report_name, data=data, emitted_at=int(datetime.now().timestamp()) * 1000),
+                    record=AirbyteRecordMessage(stream=report_name, data=row, emitted_at=int(datetime.now().timestamp()) * 1000),
                 )
 
-                last_cursor_value = data[DEFAULT_CURSOR_FIELD]
+                last_cursor_value = row[DEFAULT_CURSOR_FIELD]
 
         yield AirbyteMessage(type=Type.STATE, state=AirbyteStateMessage(data={report_name: {DEFAULT_CURSOR_FIELD: last_cursor_value}}))
 
     @staticmethod
-    def _client(json_credentials: Mapping[str, str]) -> BetaAnalyticsDataClient:
-        credentials = service_account.Credentials.from_service_account_info(json_credentials)
-        return BetaAnalyticsDataClient(credentials=credentials)
-
-    @staticmethod
     def _run_report(config: Mapping[str, Any]) -> RunReportResponse:
         property_id = config.get("property_id")
+        dimensions = config.get("dimensions", "").split(",")
+        metrics = config.get("metrics", "").split(",")
+        start_date = config.get("date_ranges_start_date")
+        end_date = config.get("date_ranges_end_date")
+        json_credentials = config.get("json_credentials")
 
-        dimensions = [Dimension(name=dim) for dim in config.get("dimensions", "").split(", ") if dim != DEFAULT_CURSOR_FIELD]
-        dimensions.append(Dimension(name=DEFAULT_CURSOR_FIELD))
-
-        metrics = [Metric(name=metric) for metric in config.get("metrics", "").split(", ")]
-
-        date_ranges_start_date = config.get("date_ranges_start_date")
-        date_ranges_end_date = config.get("date_ranges_end_date")
-
-        client = SourceGoogleAnalyticsDataApi._client(json.loads(config.get("json_credentials")))
-
-        request = RunReportRequest(
-            property=f"properties/{property_id}",
-            dimensions=dimensions,
-            metrics=metrics,
-            date_ranges=[DateRange(start_date=date_ranges_start_date, end_date=date_ranges_end_date)],
-            order_bys=[
-                OrderBy(
-                    dimension=OrderBy.DimensionOrderBy(
-                        dimension_name=DEFAULT_CURSOR_FIELD,
-                        order_type=OrderBy.DimensionOrderBy.OrderType.ALPHANUMERIC
-                    )
-                )
-            ]
-        )
-        return client.run_report(request)
+        return Client(json.loads(json_credentials)).run_report(property_id, dimensions, metrics, start_date, end_date)
