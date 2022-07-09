@@ -34,7 +34,7 @@ class JsonToTables:
         table = Table(schema=self.schema, name=table_name, primary_keys=table_primary_keys, references=references)
 
         if references and reference_key_as_primary_key:
-            logger.info(f"Table name with reference {table.full_name}")
+            logger.info(f"UPDATE {table.full_name} SET _airbyte_ab_id = right(SHA2({table.reference_key.name}, 256), 32) WHERE _airbyte_ab_id != right(SHA2({table.reference_key.name}, 256), 32);")
             table.primary_keys += [table.reference_key.name]
 
         self.tables[name] = table
