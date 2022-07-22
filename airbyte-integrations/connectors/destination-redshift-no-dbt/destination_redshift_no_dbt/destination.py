@@ -16,8 +16,6 @@ from destination_redshift_no_dbt.records_writer import RecordsWriter
 from destination_redshift_no_dbt.s3_objects_manager import S3ObjectsManager
 from destination_redshift_no_dbt.stream import Stream
 
-logger = logging.getLogger("airbyte")
-
 
 class DestinationRedshiftNoDbt(Destination):
     def __init__(self):
