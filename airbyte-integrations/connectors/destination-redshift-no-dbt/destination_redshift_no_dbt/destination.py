@@ -2,7 +2,6 @@
 # Copyright (c) 2022 Airbyte, Inc., all rights reserved.
 #
 import argparse
-import logging
 from typing import Mapping, Any, Iterable, Dict
 
 from airbyte_cdk import AirbyteLogger
