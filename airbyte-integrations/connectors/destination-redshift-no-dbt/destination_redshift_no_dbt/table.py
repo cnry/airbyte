@@ -39,7 +39,7 @@ class Table:
 
     @property
     def fields(self) -> List[Field]:
-        return list(filter(None, [*self._fields, AIRBYTE_AB_ID, AIRBYTE_EMITTED_AT, self.reference_key]))
+        return list(filter(None, [AIRBYTE_AB_ID, AIRBYTE_EMITTED_AT, *self._fields, self.reference_key]))
 
     def add_field(self, field: Field):
         self._fields.append(field)

@@ -53,7 +53,7 @@ class TestJsonSchemaToTables(TestCase):
         assert len(users_table.fields) == 4
 
         assert users_table.primary_keys == [AIRBYTE_ID_NAME, self.id_field_mock]
-        assert users_table.field_names == [self.id_field_mock, self.name_field_mock, AIRBYTE_ID_NAME, AIRBYTE_EMITTED_AT_NAME]
+        assert users_table.field_names == [AIRBYTE_ID_NAME, AIRBYTE_EMITTED_AT_NAME, self.id_field_mock, self.name_field_mock]
 
         id_field = list(filter(lambda field: field.name == self.id_field_mock, users_table.fields))[0]
 
@@ -107,7 +107,7 @@ class TestJsonSchemaToTables(TestCase):
         assert len(users_table.fields) == 4
 
         assert users_table.primary_keys == [AIRBYTE_ID_NAME]
-        assert users_table.field_names == [self.id_field_mock, self.name_field_mock, AIRBYTE_ID_NAME, AIRBYTE_EMITTED_AT_NAME]
+        assert users_table.field_names == [AIRBYTE_ID_NAME, AIRBYTE_EMITTED_AT_NAME, self.id_field_mock, self.name_field_mock]
 
         id_field = list(filter(lambda field: field.name == self.id_field_mock, users_table.fields))[0]
 
@@ -168,7 +168,7 @@ class TestJsonSchemaToTables(TestCase):
         assert len(users_table.fields) == 4
 
         assert users_table.primary_keys == [AIRBYTE_ID_NAME, self.id_field_mock]
-        assert users_table.field_names == [self.id_field_mock, self.name_field_mock, AIRBYTE_ID_NAME, AIRBYTE_EMITTED_AT_NAME]
+        assert users_table.field_names == [AIRBYTE_ID_NAME, AIRBYTE_EMITTED_AT_NAME, self.id_field_mock, self.name_field_mock]
 
         id_field = list(filter(lambda field: field.name == self.id_field_mock, users_table.fields))[0]
 
@@ -197,9 +197,9 @@ class TestJsonSchemaToTables(TestCase):
 
         assert users_address_table.primary_keys == [AIRBYTE_ID_NAME, users_address_table.reference_key.name]
         assert users_address_table.field_names == [
-            street_field_mock,
             AIRBYTE_ID_NAME,
             AIRBYTE_EMITTED_AT_NAME,
+            street_field_mock,
             users_address_table.reference_key.name
         ]
 
@@ -259,11 +259,11 @@ class TestJsonSchemaToTables(TestCase):
 
         assert users_table.primary_keys == [AIRBYTE_ID_NAME, self.id_field_mock]
         assert users_table.field_names == [
+            AIRBYTE_ID_NAME,
+            AIRBYTE_EMITTED_AT_NAME,
             self.id_field_mock,
             self.name_field_mock,
-            tags_field_mock,
-            AIRBYTE_ID_NAME,
-            AIRBYTE_EMITTED_AT_NAME
+            tags_field_mock
         ]
 
         id_field = list(filter(lambda field: field.name == self.id_field_mock, users_table.fields))[0]
@@ -325,11 +325,11 @@ class TestJsonSchemaToTables(TestCase):
 
         assert users_table.primary_keys == [AIRBYTE_ID_NAME, self.id_field_mock]
         assert users_table.field_names == [
+            AIRBYTE_ID_NAME,
+            AIRBYTE_EMITTED_AT_NAME,
             self.id_field_mock,
             self.name_field_mock,
-            tags_field_mock,
-            AIRBYTE_ID_NAME,
-            AIRBYTE_EMITTED_AT_NAME
+            tags_field_mock
         ]
 
         id_field = list(filter(lambda field: field.name == self.id_field_mock, users_table.fields))[0]
@@ -400,10 +400,10 @@ class TestJsonSchemaToTables(TestCase):
 
         assert users_table.primary_keys == [AIRBYTE_ID_NAME, self.id_field_mock]
         assert users_table.field_names == [
-            self.id_field_mock,
-            self.name_field_mock,
             AIRBYTE_ID_NAME,
-            AIRBYTE_EMITTED_AT_NAME
+            AIRBYTE_EMITTED_AT_NAME,
+            self.id_field_mock,
+            self.name_field_mock
         ]
 
         id_field = list(filter(lambda field: field.name == self.id_field_mock, users_table.fields))[0]
@@ -433,9 +433,9 @@ class TestJsonSchemaToTables(TestCase):
 
         assert user_addresses_table.primary_keys == [AIRBYTE_ID_NAME]
         assert user_addresses_table.field_names == [
-            street_field_mock,
             AIRBYTE_ID_NAME,
             AIRBYTE_EMITTED_AT_NAME,
+            street_field_mock,
             user_addresses_table.reference_key.name
         ]
 

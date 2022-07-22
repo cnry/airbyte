@@ -83,7 +83,7 @@ class TestTable(TestCase):
     def test_create_final_table_statement(self):
         actual_create_statement = " ".join(self.table.create_statement().split())
 
-        columns = f"{str(self.field_1)}, {str(self.field_2)}, {str(AIRBYTE_AB_ID)}, {str(AIRBYTE_EMITTED_AT)}, {str(self.table.reference_key)}"
+        columns = f"{str(AIRBYTE_AB_ID)}, {str(AIRBYTE_EMITTED_AT)}, {str(self.field_1)}, {str(self.field_2)}, {str(self.table.reference_key)}"
         primary_key = f"PRIMARY KEY({AIRBYTE_AB_ID.name})"
         foreign_key = f"FOREIGN KEY({self.table.reference_key.name}) REFERENCES {self.table.references.full_name}({AIRBYTE_AB_ID.name})"
         unique_key = f"UNIQUE({AIRBYTE_AB_ID.name})"
@@ -96,7 +96,7 @@ class TestTable(TestCase):
     def test_create_staging_table_statement(self):
         actual_create_statement = " ".join(self.table.create_statement(staging=True).split())
 
-        columns = f"{str(self.field_1)}, {str(self.field_2)}, {str(AIRBYTE_AB_ID)}, {str(AIRBYTE_EMITTED_AT)}, {str(self.table.reference_key)}"
+        columns = f"{str(AIRBYTE_AB_ID)}, {str(AIRBYTE_EMITTED_AT)}, {str(self.field_1)}, {str(self.field_2)}, {str(self.table.reference_key)}"
         primary_key = f"PRIMARY KEY({AIRBYTE_AB_ID.name})"
         foreign_key = f"FOREIGN KEY({self.table.reference_key.name}) REFERENCES {self.table.references.full_name}({AIRBYTE_AB_ID.name})"
         unique_key = f"UNIQUE({AIRBYTE_AB_ID.name})"
