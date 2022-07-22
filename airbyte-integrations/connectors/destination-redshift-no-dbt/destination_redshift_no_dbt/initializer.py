@@ -12,8 +12,6 @@ from destination_redshift_no_dbt.csv_writer import CSVWriter
 from destination_redshift_no_dbt.json_schema_to_tables import JsonSchemaToTables
 from destination_redshift_no_dbt.stream import Stream
 
-logger = logging.getLogger("airbyte")
-
 
 class Initializer:
     def __init__(self, configured_catalog: ConfiguredAirbyteCatalog, connection_pool: ConnectionPool):
@@ -41,7 +39,6 @@ class Initializer:
 
         for stream in streams.values():
             for table in stream.final_tables.values():
-                logger.info(f"Creating table {table.name} for stream {stream.name}")
                 cursor.execute(table.create_statement())
 
                 if stream.destination_sync_mode == DestinationSyncMode.overwrite:
