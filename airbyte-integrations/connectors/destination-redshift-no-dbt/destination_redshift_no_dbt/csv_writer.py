@@ -1,8 +1,11 @@
-import csv
+#
+# Copyright (c) 2022 Airbyte, Inc., all rights reserved.
+#
 import gzip
-import shutil
-import tempfile
+from csv import DictWriter
 from pathlib import Path
+from shutil import copyfileobj
+from tempfile import NamedTemporaryFile
 from typing import Union, List, Optional
 
 from dotmap import DotMap
@@ -24,9 +27,9 @@ class CSVWriter:
         self._rows_count = 0
 
     def initialize_writer(self):
-        self._temporary_file = tempfile.NamedTemporaryFile(delete=True, suffix=f".{CSV_EXTENSION}")
+        self._temporary_file = NamedTemporaryFile(delete=True, suffix=f".{CSV_EXTENSION}")
 
-        self._dict_writer = csv.DictWriter(open(self._temporary_file.name, "w"), fieldnames=self.table.field_names)
+        self._dict_writer = DictWriter(open(self._temporary_file.name, "w"), fieldnames=self.table.field_names)
         self._dict_writer.writeheader()
 
         self._rows_count = 0
@@ -46,7 +49,7 @@ class CSVWriter:
             self.initialize_writer()
 
             with temporary_gzip_file as f_out:
-                shutil.copyfileobj(temp_file, f_out)
+                copyfileobj(temp_file, f_out)
 
             return temporary_gzip_file
 

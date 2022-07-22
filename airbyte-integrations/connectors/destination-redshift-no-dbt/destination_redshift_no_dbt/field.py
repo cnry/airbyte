@@ -1,3 +1,6 @@
+#
+# Copyright (c) 2022 Airbyte, Inc., all rights reserved.
+#
 class DataType:
     def __init__(self, name: str, length: str = None):
         self.name = name
