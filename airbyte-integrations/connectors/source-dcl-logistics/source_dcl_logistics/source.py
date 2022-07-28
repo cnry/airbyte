@@ -1,7 +1,7 @@
 #
 # Copyright (c) 2021 Airbyte, Inc., all rights reserved.
 #
-
+import logging
 import re
 from abc import ABC
 from base64 import b64encode
@@ -15,10 +15,14 @@ from airbyte_cdk.sources.streams import Stream
 from airbyte_cdk.sources.streams.http import HttpStream
 from airbyte_cdk.sources.streams.http.requests_native_auth import TokenAuthenticator
 from dateutil.parser import parse
+
 from source_dcl_logistics.models.order import Order
 
 DEFAULT_CURSOR = "updated_at"
 DATE_PATTERN = re.compile(r"\d{4}-\d{2}-\d{2}")
+
+
+logger = logging.getLogger("airbyte")
 
 
 # Basic full refresh stream
@@ -106,6 +110,8 @@ class Orders(IncrementalDclLogisticsStream):
 
         if self.modified_to:
             params.update({"modified_to": self.modified_to})
+
+        logger.info(f"Sending request with params: {params}")
 
         return params
 
