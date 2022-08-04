@@ -5,9 +5,9 @@ import logging
 import re
 from abc import ABC
 from base64 import b64encode
-from datetime import datetime, timezone
+from datetime import datetime, timezone, date
 from parser import ParserError
-from typing import Any, Iterable, List, Mapping, MutableMapping, Optional, Tuple, Union
+from typing import Any, Iterable, List, Mapping, MutableMapping, Optional, Tuple, Union, Dict
 
 import requests
 from airbyte_cdk.sources import AbstractSource
@@ -122,32 +122,54 @@ class Orders(IncrementalDclLogisticsStream):
                 for shipment_json in order_json.get("shipments") or []:
                     for package_json in shipment_json.get("packages") or []:
                         for shipped_item_json in package_json.get("shipped_items") or []:
-                            for serial_number in shipped_item_json.get("serial_numbers") or []:
-                                ship_date = re.search(DATE_PATTERN, (shipment_json.get("ship_date") or ""))
-                                yield Order(
-                                    account_number=order_json.get("account_number"),
-                                    order_number=order_json.get("order_number"),
-                                    item_number=shipped_item_json.get("item_number"),
-                                    serial_number=(serial_number or "").upper(),
+                            ship_date = re.search(DATE_PATTERN, (shipment_json.get("ship_date") or ""))
+
+                            if shipped_item_json.get("serial_numbers"):
+                                for serial_number in shipped_item_json.get("serial_numbers"):
+                                    yield self._initialize_order(
+                                        order_json=order_json,
+                                        shipped_item_json=shipped_item_json,
+                                        serial_number=serial_number,
+                                        ship_date=ship_date.group() if ship_date else None,
+                                        shipment_json=shipment_json,
+                                        package_json=package_json
+                                    ).__dict__
+                            else:
+                                yield self._initialize_order(
+                                    order_json=order_json,
+                                    shipped_item_json=shipped_item_json,
+                                    serial_number=None,
                                     ship_date=ship_date.group() if ship_date else None,
-                                    quantity=shipped_item_json.get("quantity"),
-                                    customer_number=order_json.get("customer_number"),
-                                    description=shipped_item_json.get("description"),
-                                    email=shipment_json.get("shipping_address").get("email"),
-                                    country=shipment_json.get("shipping_address").get("country"),
-                                    state_province=shipment_json.get("shipping_address").get("state_province"),
-                                    city=shipment_json.get("shipping_address").get("city"),
-                                    postal_code=shipment_json.get("shipping_address").get("postal_code"),
-                                    company=shipment_json.get("shipping_address").get("company"),
-                                    attention=shipment_json.get("shipping_address").get("attention"),
-                                    carton_id=package_json.get("carton_id"),
-                                    order_type=order_json.get("order_type"),
-                                    tracking_number=package_json.get("tracking_number"),
-                                    updated_at=self.parse_string_to_utc_timestamp(order_json.get("modified_at"), default=datetime.utcnow()),
+                                    shipment_json=shipment_json,
+                                    package_json=package_json
                                 ).__dict__
 
         else:
             self.has_more_pages = False
+
+    def _initialize_order(self, order_json: Dict[str, Union[dict, str]], shipped_item_json: Dict[str, dict], serial_number: Optional[str],
+                          ship_date: Optional[date], shipment_json: Dict[str, dict], package_json: Dict[str, dict]) -> Order:
+        return Order(
+            account_number=order_json.get("account_number"),
+            order_number=order_json.get("order_number"),
+            item_number=shipped_item_json.get("item_number"),
+            serial_number=(serial_number or "").upper(),
+            ship_date=ship_date,
+            quantity=shipped_item_json.get("quantity"),
+            customer_number=order_json.get("customer_number"),
+            description=shipped_item_json.get("description"),
+            email=shipment_json.get("shipping_address").get("email"),
+            country=shipment_json.get("shipping_address").get("country"),
+            state_province=shipment_json.get("shipping_address").get("state_province"),
+            city=shipment_json.get("shipping_address").get("city"),
+            postal_code=shipment_json.get("shipping_address").get("postal_code"),
+            company=shipment_json.get("shipping_address").get("company"),
+            attention=shipment_json.get("shipping_address").get("attention"),
+            carton_id=package_json.get("carton_id"),
+            order_type=order_json.get("order_type"),
+            tracking_number=package_json.get("tracking_number"),
+            updated_at=self.parse_string_to_utc_timestamp(order_json.get("modified_at"), default=datetime.utcnow()),
+        )
 
 
 # Source
