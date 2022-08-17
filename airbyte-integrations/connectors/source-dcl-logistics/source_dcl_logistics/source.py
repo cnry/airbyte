@@ -119,57 +119,73 @@ class Orders(IncrementalDclLogisticsStream):
         orders_json = response.json().get("orders")
         if orders_json:
             for order_json in orders_json:
+                order = Order(
+                    account_number=order_json.get("account_number"),
+                    order_number=order_json.get("order_number"),
+                    customer_number=order_json.get("customer_number"),
+                    item_number="",
+                    serial_number="",
+                    order_type=order_json.get("order_type"),
+                    updated_at=self.parse_string_to_utc_timestamp(order_json.get("modified_at"), default=datetime.utcnow())
+                )
+
+                shipping_address_json = order_json.get("shipping_address")
+
+                if shipping_address_json:
+                    order.country = shipping_address_json.get("country")
+                    order.state_province = shipping_address_json.get("state_province")
+                    order.city = shipping_address_json.get("city")
+                    order.postal_code = shipping_address_json.get("postal_code")
+                    order.company = shipping_address_json.get("company")
+                    order.attention = shipping_address_json.get("attention")
+                    order.email = shipping_address_json.get("email")
+
+                orders_by_item_number = dict()
+                for order_line_json in order_json.get("order_lines") or []:
+                    sub_order = order.copy(deep=True)
+
+                    sub_order.quantity = order_line_json.get("quantity")
+                    sub_order.description = order_line_json.get("description")
+                    sub_order.item_number = order_line_json.get("item_number")
+                    sub_order.ship_date = order_line_json.get("ship_by")
+
+                    orders_by_item_number[sub_order.item_number] = sub_order
+
                 for shipment_json in order_json.get("shipments") or []:
                     for package_json in shipment_json.get("packages") or []:
                         for shipped_item_json in package_json.get("shipped_items") or []:
+                            shipped_item_order = order.copy(deep=True)
+
+                            shipped_item_order.carton_id = package_json.get("carton_id")
+                            shipped_item_order.tracking_number = package_json.get("tracking_number")
+
                             ship_date = re.search(DATE_PATTERN, (shipment_json.get("ship_date") or ""))
+
+                            shipped_item_order.quantity = shipped_item_json.get("quantity")
+                            shipped_item_order.description = shipped_item_json.get("description")
+                            shipped_item_order.item_number = shipped_item_json.get("item_number")
+                            if ship_date:
+                                shipped_item_order.ship_date = ship_date.group()
+                            else:
+                                shipped_item_order.ship_date = orders_by_item_number[shipped_item_order.item_number].ship_date
+
+                            orders_by_item_number.pop(shipped_item_order.item_number, None)
 
                             if shipped_item_json.get("serial_numbers"):
                                 for serial_number in shipped_item_json.get("serial_numbers"):
-                                    yield self._initialize_order(
-                                        order_json=order_json,
-                                        shipped_item_json=shipped_item_json,
-                                        serial_number=serial_number,
-                                        ship_date=ship_date.group() if ship_date else None,
-                                        shipment_json=shipment_json,
-                                        package_json=package_json
-                                    ).__dict__
-                            else:
-                                yield self._initialize_order(
-                                    order_json=order_json,
-                                    shipped_item_json=shipped_item_json,
-                                    serial_number=None,
-                                    ship_date=ship_date.group() if ship_date else None,
-                                    shipment_json=shipment_json,
-                                    package_json=package_json
-                                ).__dict__
+                                    order_with_serial_number = shipped_item_order.copy(deep=True)
+                                    order_with_serial_number.serial_number = serial_number.upper()
 
+                                    yield order_with_serial_number.__dict__
+                            else:
+                                shipped_item_order.serial_number = ""
+
+                                yield shipped_item_order.__dict__
+
+                for item_number, order in orders_by_item_number.items():
+                    yield order.__dict__
         else:
             self.has_more_pages = False
-
-    def _initialize_order(self, order_json: Dict[str, Union[dict, str]], shipped_item_json: Dict[str, dict], serial_number: Optional[str],
-                          ship_date: Optional[date], shipment_json: Dict[str, dict], package_json: Dict[str, dict]) -> Order:
-        return Order(
-            account_number=order_json.get("account_number"),
-            order_number=order_json.get("order_number"),
-            item_number=shipped_item_json.get("item_number"),
-            serial_number=(serial_number or "").upper(),
-            ship_date=ship_date,
-            quantity=shipped_item_json.get("quantity"),
-            customer_number=order_json.get("customer_number"),
-            description=shipped_item_json.get("description"),
-            email=shipment_json.get("shipping_address").get("email"),
-            country=shipment_json.get("shipping_address").get("country"),
-            state_province=shipment_json.get("shipping_address").get("state_province"),
-            city=shipment_json.get("shipping_address").get("city"),
-            postal_code=shipment_json.get("shipping_address").get("postal_code"),
-            company=shipment_json.get("shipping_address").get("company"),
-            attention=shipment_json.get("shipping_address").get("attention"),
-            carton_id=package_json.get("carton_id"),
-            order_type=order_json.get("order_type"),
-            tracking_number=package_json.get("tracking_number"),
-            updated_at=self.parse_string_to_utc_timestamp(order_json.get("modified_at"), default=datetime.utcnow()),
-        )
 
 
 # Source
