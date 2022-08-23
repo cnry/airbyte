@@ -5,9 +5,9 @@ import logging
 import re
 from abc import ABC
 from base64 import b64encode
-from datetime import datetime, timezone, date
+from datetime import datetime, timezone
 from parser import ParserError
-from typing import Any, Iterable, List, Mapping, MutableMapping, Optional, Tuple, Union, Dict
+from typing import Any, Iterable, List, Mapping, MutableMapping, Optional, Tuple, Union
 
 import requests
 from airbyte_cdk.sources import AbstractSource
@@ -112,7 +112,7 @@ class Orders(IncrementalDclLogisticsStream):
         params = {"page": page, "page_size": self.page_size, "extended_date": True}
 
         if self.importing_cancelled_orders:
-            params["status"] = 2  # Cancelled orders https://api.dclcorp.com/Help/ResourceModel?modelName=status
+            params.update({"status": 2}) # Cancelled orders https://api.dclcorp.com/Help/ResourceModel?modelName=status
 
         self.modified_from = (stream_state and stream_state[self.cursor_field]) or self.modified_from
 
