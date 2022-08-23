@@ -35,6 +35,7 @@ class DclLogisticsStream(HttpStream, ABC):
 
         self.next_page = 1
         self.has_more_pages = True
+        self.importing_cancelled_orders = False
 
     def next_page_token(self, response: requests.Response) -> Optional[Mapping[str, Any]]:
         """
@@ -46,7 +47,14 @@ class DclLogisticsStream(HttpStream, ABC):
             self.next_page += 1
             return {"page": self.next_page}
         else:
-            return None
+            if not self.importing_cancelled_orders:
+                self.next_page = 0
+                self.has_more_pages = True
+                self.importing_cancelled_orders = True
+
+                return self.next_page_token(response=response)
+            else:
+                return None
 
     @staticmethod
     def parse_string_to_utc_timestamp(date_time_str: str, default: datetime) -> datetime:
@@ -102,6 +110,9 @@ class Orders(IncrementalDclLogisticsStream):
         page = next_page_token.get("page", 1) if next_page_token else 1
 
         params = {"page": page, "page_size": self.page_size, "extended_date": True}
+
+        if self.importing_cancelled_orders:
+            params["status"] = 2  # Cancelled orders https://api.dclcorp.com/Help/ResourceModel?modelName=status
 
         self.modified_from = (stream_state and stream_state[self.cursor_field]) or self.modified_from
 
