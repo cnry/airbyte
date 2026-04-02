@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: more-secrets
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v4
       # check all files on master
       - uses: gaurav-nelson/github-action-markdown-link-check@v1
         with:

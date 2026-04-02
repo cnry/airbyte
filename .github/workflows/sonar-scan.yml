@@ -16,7 +16,7 @@ jobs:
         with:
           workflow_id: ${{ github.event.workflow.id }}
       - name: Checkout Airbyte
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 1000
       - name: Setup Python
@@ -55,7 +55,7 @@ jobs:
           echo "Module: ${{ env.MODULE_NAME }}, Lang: ${{ env.MODULE_LANG }}, Folder: ${{ env.MODULE_FOLDER }}"
       - name: Checkout Airbyte
         if: ${{ env.ENV_NAME == 'github' }}
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 

@@ -22,13 +22,13 @@ jobs:
     environment: more-secrets
     steps:
       - name: Checkout Airbyte
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           repository: ${{ github.event.inputs.repo }}
           ref: ${{ github.event.inputs.gitref }}
 
       - name: Npm Caching
-        uses: actions/cache@v2
+        uses: actions/cache@v5
         with:
           path: |
             ~/.npm
@@ -38,7 +38,7 @@ jobs:
 
       # this intentionally does not use restore-keys so we don't mess with gradle caching
       - name: Gradle Caching
-        uses: actions/cache@v2
+        uses: actions/cache@v5
         with:
           path: |
             ~/.gradle/caches
