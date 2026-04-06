@@ -17,7 +17,7 @@ jobs:
     outputs:
       next-version: ${{ steps.sem-ver.outputs.version }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       
@@ -36,12 +36,12 @@ jobs:
     runs-on: ubuntu-22.04
     needs: ["generate-semantic-version"]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
         with:
           path: "airbyte"
           fetch-depth: 0
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
         with:
           repository: "airbytehq/helm-charts"
           token: ${{ secrets.OCTAVIA_PAT }}
