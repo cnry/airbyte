@@ -15,7 +15,7 @@ jobs:
     environment: more-secrets
     steps:
       - name: Checkout Airbyte
-        uses: actions/checkout@v2
+        uses: actions/checkout@v6
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip

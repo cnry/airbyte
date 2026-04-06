@@ -23,7 +23,7 @@ jobs:
       pat: ${{ steps.variables.outputs.pat }}
     steps:
       - name: Checkout Airbyte
-        uses: actions/checkout@v2
+        uses: actions/checkout@v6
       - name: Check PAT rate limits
         id: variables
         run: |
@@ -42,7 +42,7 @@ jobs:
       ec2-instance-id: ${{ steps.start-ec2-runner.outputs.ec2-instance-id }}
     steps:
       - name: Checkout Airbyte
-        uses: actions/checkout@v2
+        uses: actions/checkout@v6
         with:
           repository: ${{ github.event.inputs.repo }}
           ref: ${{ github.event.inputs.gitref }}
@@ -69,7 +69,7 @@ jobs:
             > :clock2: https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}
 
       - name: Checkout Airbyte
-        uses: actions/checkout@v2
+        uses: actions/checkout@v6
         with:
           repository: ${{ github.event.inputs.repo }}
           ref: ${{ github.event.inputs.gitref }}
